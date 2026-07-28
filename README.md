@@ -177,6 +177,22 @@ npm run lint
 npm run build
 ```
 
+## Deploy to Vercel
+
+Both apps deploy from this single repository as two separate Vercel projects.
+
+1. **API project** — import the repo, set Root Directory to `apps/api`. The included `apps/api/vercel.json` and `apps/api/api/index.py` expose FastAPI as a serverless function; no build/start commands are needed. Environment variables:
+   - `DATABASE_URL` — Neon **pooled** connection string
+   - `JWT_SECRET_KEY` — a strong random value (do not reuse the dev secret)
+   - `ENVIRONMENT=production`
+   - `FRONTEND_ORIGINS=https://<web-project>.vercel.app`
+2. **Web project** — import the repo again, set Root Directory to `apps/web`. Environment variables:
+   - `NEXT_PUBLIC_API_URL=/api/v1`
+   - `API_PROXY_TARGET=https://<api-project>.vercel.app`
+
+   `next.config.ts` proxies `/api/v1/*` to the API project, so the HttpOnly auth cookie stays first-party (`SameSite=Lax` keeps working; two bare `*.vercel.app` domains would otherwise be cross-site and the cookie would be dropped).
+3. **Migrations** — Vercel does not run Alembic. Apply schema changes from your machine against the Neon database: `cd apps/api && .\.venv\Scripts\python.exe -m alembic upgrade head`.
+
 ## Dashboard data semantics
 
 - `Estimated effort` is an optional per-task value in minutes. The accepted range is 1 to 10,080 minutes.
