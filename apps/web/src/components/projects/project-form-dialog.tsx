@@ -129,7 +129,7 @@ export function ProjectFormDialog({
               placeholder="e.g. Product launch"
               maxLength={80}
               required
-              className="h-11"
+              className="h-10"
             />
           </div>
           <div className="space-y-2">
@@ -145,7 +145,7 @@ export function ProjectFormDialog({
           </div>
           <fieldset>
             <legend className="text-sm font-medium">Project color</legend>
-            <p className="mt-1 text-xs text-[#7b8882]">
+            <p className="mt-1 text-xs text-muted-foreground">
               Use the same color across project and task views.
             </p>
             <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-8">
@@ -157,10 +157,10 @@ export function ProjectFormDialog({
                   aria-label={`${item.name} project color`}
                   aria-pressed={color === item.value}
                   className={cn(
-                    "flex aspect-square items-center justify-center rounded-xl border-2 bg-white transition",
+                    "flex aspect-square items-center justify-center rounded-md border-2 bg-card transition",
                     color === item.value
-                      ? "border-[#173b35] shadow-sm"
-                      : "border-transparent hover:border-[#cdd7cf]",
+                      ? "border-foreground shadow-sm"
+                      : "border-transparent hover:border-input",
                   )}
                 >
                   <span
@@ -178,14 +178,14 @@ export function ProjectFormDialog({
                 id="project-status"
                 name="status"
                 defaultValue={project.status}
-                className="h-11 w-full rounded-lg border bg-white px-3 text-sm"
+                className="h-10 w-full rounded-md border border-input bg-card px-3 text-sm"
               >
                 <option value="active">Active</option>
                 <option value="paused">Paused</option>
                 <option value="completed">Completed</option>
                 <option value="archived">Archived</option>
               </select>
-              <p className="flex items-center gap-1.5 text-xs text-[#7d8983]">
+              <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Archive className="size-3.5" />
                 Archived projects remain editable but are separated from active
                 work.
@@ -193,11 +193,11 @@ export function ProjectFormDialog({
             </div>
           ) : null}
           {project && confirmDelete ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-4">
-              <p className="text-sm font-semibold text-red-800">
+            <div className="rounded-md border border-destructive/30 bg-destructive/5 p-4">
+              <p className="text-sm font-semibold text-destructive">
                 Delete this project?
               </p>
-              <p className="mt-1 text-xs leading-5 text-red-700">
+              <p className="mt-1 text-xs leading-5 text-destructive">
                 Tasks will be kept without a project. Future plans inside this
                 project will be removed.
               </p>
@@ -228,7 +228,7 @@ export function ProjectFormDialog({
           {error ? (
             <p
               role="alert"
-              className="rounded-xl border border-[#efd2cd] bg-[#fff7f5] px-4 py-3 text-sm text-[#99443d]"
+              className="rounded-md border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-sm text-destructive"
             >
               {error}
             </p>
@@ -239,7 +239,7 @@ export function ProjectFormDialog({
                 type="button"
                 variant="ghost"
                 onClick={() => setConfirmDelete(true)}
-                className="mr-auto text-red-700 hover:bg-red-50 hover:text-red-800"
+                className="mr-auto text-destructive hover:bg-destructive/10"
               >
                 <Trash2 />
                 Delete
@@ -255,7 +255,7 @@ export function ProjectFormDialog({
             <Button
               type="submit"
               disabled={saving || confirmDelete}
-              className="bg-[#173b35] text-white"
+             
             >
               {saving ? <LoaderCircle className="animate-spin" /> : null}
               {saving ? "Saving..." : "Save project"}

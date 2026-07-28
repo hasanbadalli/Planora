@@ -58,33 +58,33 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       {!isLogin ? (
         <div className="space-y-2">
           <Label htmlFor="username">Username</Label>
-          <Input id="username" name="username" autoComplete="username" placeholder="e.g. alex_dev" minLength={3} maxLength={32} pattern="[a-zA-Z0-9_]+" required disabled={isSubmitting} className="h-12 rounded-xl border-[#dce3dc] bg-[#fbfcf9] px-4 shadow-none" />
-          <p className="text-xs leading-5 text-[#78847f]">Letters, numbers, and underscores only.</p>
+          <Input id="username" name="username" autoComplete="username" placeholder="e.g. alex_dev" minLength={3} maxLength={32} pattern="[a-zA-Z0-9_]+" required disabled={isSubmitting} className="h-10" />
+          <p className="text-xs leading-5 text-muted-foreground">Letters, numbers, and underscores only.</p>
         </div>
       ) : null}
       <div className="space-y-2">
         <Label htmlFor={isLogin ? "identifier" : "email"}>{isLogin ? "Username or email" : "Email"}</Label>
-        <Input id={isLogin ? "identifier" : "email"} name={isLogin ? "identifier" : "email"} type={isLogin ? "text" : "email"} autoComplete={isLogin ? "username" : "email"} placeholder={isLogin ? "alex_dev or alex@example.com" : "alex@example.com"} required disabled={isSubmitting} className="h-12 rounded-xl border-[#dce3dc] bg-[#fbfcf9] px-4 shadow-none" />
+        <Input id={isLogin ? "identifier" : "email"} name={isLogin ? "identifier" : "email"} type={isLogin ? "text" : "email"} autoComplete={isLogin ? "username" : "email"} placeholder={isLogin ? "alex_dev or alex@example.com" : "alex@example.com"} required disabled={isSubmitting} className="h-10" />
       </div>
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
         <div className="relative">
-          <Input id="password" name="password" type={showPassword ? "text" : "password"} autoComplete={isLogin ? "current-password" : "new-password"} placeholder="••••••••" minLength={isLogin ? 1 : 8} maxLength={128} required disabled={isSubmitting} className="h-12 rounded-xl border-[#dce3dc] bg-[#fbfcf9] px-4 pr-12 shadow-none" />
-          <button type="button" onClick={() => setShowPassword((value) => !value)} className="absolute right-1.5 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-lg text-[#77837e] hover:bg-[#eef1ec]" aria-label={showPassword ? "Hide password" : "Show password"}>
+          <Input id="password" name="password" type={showPassword ? "text" : "password"} autoComplete={isLogin ? "current-password" : "new-password"} placeholder="••••••••" minLength={isLogin ? 1 : 8} maxLength={128} required disabled={isSubmitting} className="h-10 pr-11" />
+          <button type="button" onClick={() => setShowPassword((value) => !value)} className="absolute right-1 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground" aria-label={showPassword ? "Hide password" : "Show password"}>
             {showPassword ? <EyeOff className="size-[18px]" /> : <Eye className="size-[18px]" />}
           </button>
         </div>
-        {!isLogin ? <p className="text-xs leading-5 text-[#78847f]">At least 8 characters, one letter, and one number.</p> : null}
+        {!isLogin ? <p className="text-xs leading-5 text-muted-foreground">At least 8 characters, one letter, and one number.</p> : null}
       </div>
-      {error ? <div role="alert" className="rounded-xl border border-[#efcfcb] bg-[#fff7f5] px-4 py-3 text-sm leading-6 text-[#9b4039]">{error}</div> : null}
-      <Button type="submit" size="lg" disabled={isSubmitting} className="h-12 w-full rounded-xl bg-[#142c2b] text-[15px] font-semibold text-white hover:bg-[#1d3c3a]">
+      {error ? <div role="alert" className="rounded-md border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-sm leading-6 text-destructive">{error}</div> : null}
+      <Button type="submit" size="lg" disabled={isSubmitting} className="h-10 w-full">
         {isSubmitting ? <LoaderCircle className="size-4 animate-spin" /> : null}
         {isSubmitting ? "Please wait..." : isLogin ? "Log in" : "Create account"}
         {!isSubmitting ? <ArrowRight className="size-4" /> : null}
       </Button>
-      <p className="text-center text-sm text-[#697872]">
+      <p className="text-center text-sm text-muted-foreground">
         {isLogin ? "New to Planora?" : "Already have an account?"}{" "}
-        <Link href={isLogin ? "/register" : "/login"} className="font-semibold text-[#234b48] underline-offset-4 hover:underline">{isLogin ? "Create an account" : "Log in"}</Link>
+        <Link href={isLogin ? "/register" : "/login"} className="font-medium text-primary underline-offset-4 hover:underline">{isLogin ? "Create an account" : "Log in"}</Link>
       </p>
     </form>
   );

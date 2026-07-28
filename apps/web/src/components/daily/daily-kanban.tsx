@@ -8,12 +8,8 @@ import { TaskKanbanBoard } from "@/components/tasks/task-kanban-board";
 import { TaskSummary } from "@/components/tasks/task-summary";
 import { Button } from "@/components/ui/button";
 import { ApiError, Project, Task, getProjects, getTasks } from "@/lib/api";
-import {
-  addDays,
-  dateKey,
-  dayBounds,
-  parseDateKey,
-} from "@/lib/dates";
+import { addDays, dateKey, dayBounds, parseDateKey } from "@/lib/dates";
+import { useWorkspaceRefresh } from "@/lib/workspace-events";
 
 export function DailyKanban() {
   const [selectedDate, setSelectedDate] = useState(() => new Date());
@@ -24,9 +20,10 @@ export function DailyKanban() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const selectedKey = dateKey(selectedDate);
+  const isToday = selectedKey === dateKey(new Date());
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (quiet = false) => {
+    if (!quiet) setLoading(true);
     setError(null);
     try {
       const [from, to] = dayBounds(selectedDate);
@@ -43,7 +40,7 @@ export function DailyKanban() {
           : "This day could not be loaded.",
       );
     } finally {
-      setLoading(false);
+      if (!quiet) setLoading(false);
     }
   }, [selectedDate]);
 
@@ -57,31 +54,32 @@ export function DailyKanban() {
     };
   }, [load]);
 
-  const title = selectedDate.toLocaleDateString("en", {
-    weekday: "long",
+  useWorkspaceRefresh(
+    useCallback(() => {
+      void load(true);
+    }, [load]),
+  );
+
+  const title = isToday
+    ? "Today"
+    : selectedDate.toLocaleDateString("en", { weekday: "long" });
+  const subtitle = selectedDate.toLocaleDateString("en", {
     month: "long",
     day: "numeric",
     year: "numeric",
   });
 
   return (
-    <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-7 sm:py-8 xl:px-10">
-      <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#70867a]">
-            Daily board
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">
-            {title}
-          </h1>
-          <p className="mt-2 text-sm text-[#6e7d76]">
-            Move work through the day without losing its schedule.
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
           <Button
-            variant="outline"
-            size="icon-lg"
+            variant="ghost"
+            size="icon"
             onClick={() => setSelectedDate((date) => addDays(date, -1))}
             aria-label="Previous day"
           >
@@ -94,51 +92,48 @@ export function DailyKanban() {
             onChange={(event) =>
               setSelectedDate(parseDateKey(event.target.value))
             }
-            className="h-11 rounded-xl border border-[#d9e1d8] bg-white px-3 text-sm font-semibold text-[#39524b]"
+            className="h-8 rounded-md border border-border bg-card px-2 text-sm"
           />
           <Button
-            variant="outline"
-            size="icon-lg"
+            variant="ghost"
+            size="icon"
             onClick={() => setSelectedDate((date) => addDays(date, 1))}
             aria-label="Next day"
           >
             <ChevronRight />
           </Button>
-          <Button
-            variant="outline"
-            onClick={() => setSelectedDate(new Date())}
-            className="h-11"
-          >
-            Today
-          </Button>
+          {!isToday ? (
+            <Button variant="outline" onClick={() => setSelectedDate(new Date())}>
+              Today
+            </Button>
+          ) : null}
           <Button
             onClick={() => {
               setEditingTask(null);
               setDialogOpen(true);
             }}
-            className="h-11 bg-[#173b35] px-4 text-white"
           >
             <Plus />
-            Add task
+            New task
           </Button>
         </div>
       </div>
-      <div className="mt-6">
+      <div className="mt-5">
         <TaskSummary tasks={tasks} />
       </div>
       {error ? (
         <div
           role="alert"
-          className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+          className="mt-4 flex items-center justify-between gap-3 rounded-md border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-sm text-destructive"
         >
           <span>{error}</span>
-          <button onClick={() => setError(null)} className="font-semibold">
+          <button onClick={() => setError(null)} className="font-medium">
             Dismiss
           </button>
         </div>
       ) : null}
       {loading ? (
-        <div className="flex min-h-96 items-center justify-center gap-2 text-sm text-[#77857f]">
+        <div className="flex min-h-96 items-center justify-center gap-2 text-sm text-muted-foreground">
           <LoaderCircle className="animate-spin" />
           Loading board...
         </div>

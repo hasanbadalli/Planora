@@ -98,7 +98,7 @@ export function ProjectNoteDialog({
               maxLength={160}
               autoFocus
               required
-              className="h-11"
+              className="h-10"
             />
           </div>
           <div className="space-y-2">
@@ -115,7 +115,7 @@ export function ProjectNoteDialog({
           {error ? (
             <p
               role="alert"
-              className="rounded-xl border border-[#efd2cd] bg-[#fff7f5] px-4 py-3 text-sm text-[#99443d]"
+              className="rounded-md border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-sm text-destructive"
             >
               {error}
             </p>
@@ -132,7 +132,7 @@ export function ProjectNoteDialog({
             <Button
               type="submit"
               disabled={saving}
-              className="bg-[#173b35] text-white"
+             
             >
               {saving ? (
                 <LoaderCircle className="animate-spin" aria-hidden />

@@ -17,6 +17,7 @@ import { TaskSummary } from "@/components/tasks/task-summary";
 import { Button } from "@/components/ui/button";
 import { ApiError, Project, Task, getProjects, getTasks } from "@/lib/api";
 import { addDays, dateKey, dayBounds, parseDateKey } from "@/lib/dates";
+import { useWorkspaceRefresh } from "@/lib/workspace-events";
 
 export function DayTimeline({ date }: { date: string }) {
   const router = useRouter();
@@ -59,6 +60,12 @@ export function DayTimeline({ date }: { date: string }) {
     };
   }, [load]);
 
+  useWorkspaceRefresh(
+    useCallback(() => {
+      void load(true);
+    }, [load]),
+  );
+
   function moveDay(amount: number) {
     router.push(`/calendar/${dateKey(addDays(parsedDate, amount))}`);
   }
@@ -71,39 +78,33 @@ export function DayTimeline({ date }: { date: string }) {
   });
 
   return (
-    <div className="mx-auto max-w-[1180px] px-4 py-6 sm:px-7 sm:py-8 xl:px-10">
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
       <Link
         href="/calendar"
-        className="inline-flex items-center gap-2 rounded-lg py-2 text-sm font-semibold text-[#65766f] hover:text-[#294b42]"
+        className="inline-flex items-center gap-1.5 rounded-md py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
         Back to week
       </Link>
-      <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#70867a]">
-            Daily schedule
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">
-            {title}
-          </h1>
-          <p className="mt-2 text-sm text-[#6e7d76]">
-            Drag to reschedule. Resize the top or bottom edge to change
-            duration.
+          <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Drag to reschedule, resize either edge in 15-minute steps.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <Button
-            variant="outline"
-            size="icon-lg"
+            variant="ghost"
+            size="icon"
             onClick={() => moveDay(-1)}
             aria-label="Previous day"
           >
             <ChevronLeft />
           </Button>
           <Button
-            variant="outline"
-            size="icon-lg"
+            variant="ghost"
+            size="icon"
             onClick={() => moveDay(1)}
             aria-label="Next day"
           >
@@ -114,28 +115,27 @@ export function DayTimeline({ date }: { date: string }) {
               setEditingTask(null);
               setDialogOpen(true);
             }}
-            className="h-11 bg-[#173b35] px-4 text-white"
           >
             <Plus />
-            Add task
+            New task
           </Button>
         </div>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-5">
         <TaskSummary tasks={tasks} />
       </div>
       {error ? (
         <div
           role="alert"
-          className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+          className="mt-4 rounded-md border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-sm text-destructive"
         >
           {error}
         </div>
       ) : null}
-      <div className="mt-5">
+      <div className="mt-4">
         {loading ? (
-          <div className="flex min-h-[440px] items-center justify-center gap-2 rounded-[22px] border border-[#dce3da] bg-white text-sm text-[#77857f]">
+          <div className="flex min-h-[440px] items-center justify-center gap-2 rounded-lg border border-border bg-card text-sm text-muted-foreground">
             <LoaderCircle className="animate-spin" />
             Loading timeline...
           </div>

@@ -154,9 +154,9 @@ export function TaskKanbanBoard({
       {feedback ? (
         <div
           role="status"
-          className="fixed bottom-24 right-4 z-50 flex items-center gap-2 rounded-xl bg-[#173b35] px-4 py-3 text-sm font-medium text-white shadow-xl sm:bottom-6 sm:right-6"
+          className="fixed bottom-24 right-4 z-50 flex items-center gap-2 rounded-lg bg-foreground px-4 py-3 text-sm font-medium text-background shadow-notion-lg sm:bottom-6 sm:right-6"
         >
-          <Check className="size-4 text-[#d7f36b]" />
+          <Check className="size-4 text-emerald-400" />
           {feedback}
         </div>
       ) : null}
@@ -184,9 +184,8 @@ function KanbanColumn({
     <section
       ref={setNodeRef}
       className={cn(
-        "min-h-56 rounded-[20px] border border-[#dce3da] bg-[#f9faf7] p-3 transition-all duration-200",
-        isOver &&
-          "-translate-y-0.5 border-[#6f8d80] bg-[#eef4eb] shadow-[0_12px_28px_rgba(45,75,64,0.1)] ring-2 ring-[#769184]/20",
+        "min-h-56 rounded-lg border border-border bg-muted p-2.5 transition-colors duration-200",
+        isOver && "border-primary/50 bg-primary/5",
       )}
     >
       <div className="flex items-center justify-between px-1 py-1">
@@ -195,15 +194,15 @@ function KanbanColumn({
             className={cn(
               "size-2 rounded-full",
               status === "todo"
-                ? "bg-slate-400"
+                ? "bg-[#9b9a97]"
                 : status === "in_progress"
-                  ? "bg-amber-500"
-                  : "bg-emerald-500",
+                  ? "bg-[#337ea9]"
+                  : "bg-[#448361]",
             )}
           />
-          <h2 className="text-sm font-semibold text-[#29423b]">{label}</h2>
+          <h2 className="text-sm font-medium text-foreground">{label}</h2>
         </div>
-        <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold text-[#74817b]">
+        <span className="rounded-full bg-card px-2 py-0.5 text-[10px] font-medium text-muted-foreground shadow-notion">
           {tasks.length}
         </span>
       </div>
@@ -221,8 +220,8 @@ function KanbanColumn({
         ) : (
           <div
             className={cn(
-              "rounded-xl border border-dashed border-[#dce3da] px-4 py-10 text-center text-xs text-[#929c97] transition-colors",
-              isOver && "border-[#769184] bg-white/70 text-[#557167]",
+              "rounded-md border border-dashed border-border px-4 py-10 text-center text-xs text-muted-foreground/70 transition-colors",
+              isOver && "border-primary/50 bg-card/70 text-primary",
             )}
           >
             {isOver ? `Move to ${label}` : "Drop a task here"}
@@ -265,7 +264,7 @@ function KanbanCard({
           if (event.key === "Enter") onEdit();
         }}
         className={cn(
-          "cursor-grab rounded-2xl border border-[#dfe5dc] bg-white p-4 shadow-[0_5px_16px_rgba(40,58,50,0.04)] outline-none transition-all duration-200 hover:-translate-y-0.5 hover:border-[#bdcbbb] hover:shadow-md active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-[#4f7665]",
+          "cursor-grab rounded-md border border-border bg-card p-3 shadow-notion outline-none transition-all duration-150 hover:shadow-notion-lg active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-ring",
           disabled && "cursor-wait opacity-60",
         )}
       >
@@ -288,12 +287,12 @@ function KanbanCardContent({
     <div
       className={cn(
         overlay &&
-          "w-72 rotate-1 scale-[1.03] rounded-2xl border border-[#91a79d] bg-white p-4 shadow-[0_24px_60px_rgba(30,58,49,0.24)]",
+          "w-72 rotate-1 scale-[1.02] rounded-md border border-border bg-card p-3 shadow-notion-lg",
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-[#edf2ec] text-[#4f6b60]">
+          <span className="flex size-6 items-center justify-center rounded-md bg-secondary text-muted-foreground">
             <TaskCategoryIcon
               category={primaryTaskCategory(task)}
               className="size-3.5"
@@ -301,24 +300,24 @@ function KanbanCardContent({
           </span>
           <span
             className={cn(
-              "rounded-full border px-2 py-1 text-[9px] font-bold uppercase tracking-[0.08em]",
+              "rounded-full border px-2 py-0.5 text-[10px] font-medium",
               STATUS_STYLES[task.status],
             )}
           >
             {statusLabel(task.status)}
           </span>
         </div>
-        <GripVertical className="size-4 text-[#9aa49f]" />
+        <GripVertical className="size-4 text-muted-foreground/50" />
       </div>
-      <h3 className="mt-3 text-sm font-semibold leading-5 text-[#253e37]">
+      <h3 className="mt-2.5 text-sm font-medium leading-5 text-foreground">
         {task.title}
       </h3>
       {task.description ? (
-        <p className="mt-2 line-clamp-2 text-xs leading-5 text-[#7a8781]">
+        <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-muted-foreground">
           {task.description}
         </p>
       ) : null}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-[11px] font-medium text-[#75827c]">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] font-medium text-muted-foreground">
         <span>
           {formatTime(task.starts_at)}–{formatTime(task.ends_at)}
         </span>
@@ -346,11 +345,11 @@ function TaskContext({ task, projects }: { task: Task; projects: Project[] }) {
   const categories = taskCategories(task);
   if (!projects.length && categories.length <= 1) return null;
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-[#edf0ec] pt-3 text-[10px] font-semibold text-[#66766f]">
+    <div className="mt-2.5 flex flex-wrap items-center gap-1.5 border-t border-border pt-2.5 text-[10px] font-medium text-muted-foreground">
       {projects.slice(0, 2).map((project) => (
         <span
           key={project.id}
-          className="flex min-w-0 items-center gap-1.5 rounded-full bg-[#f3f5f2] px-2 py-1"
+          className="flex min-w-0 items-center gap-1.5 rounded-full bg-secondary px-2 py-0.5"
         >
           <span
             className="size-2 shrink-0 rounded-full"
@@ -360,12 +359,12 @@ function TaskContext({ task, projects }: { task: Task; projects: Project[] }) {
         </span>
       ))}
       {projects.length > 2 ? (
-        <span className="rounded-full bg-[#f3f5f2] px-2 py-1">
+        <span className="rounded-full bg-secondary px-2 py-0.5">
           +{projects.length - 2}
         </span>
       ) : null}
       {categories.length > 1 ? (
-        <span className="rounded-full bg-[#edf2ec] px-2 py-1 text-[#526d63]">
+        <span className="rounded-full bg-secondary px-2 py-0.5">
           +{categories.length - 1} categor{categories.length === 2 ? "y" : "ies"}
         </span>
       ) : null}

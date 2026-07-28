@@ -76,16 +76,13 @@ export function ProjectFuturePlansSection({ project }: { project: Project }) {
   }
 
   return (
-    <section className="rounded-[22px] border border-[#dce3da] bg-white p-5 sm:p-6">
+    <section className="rounded-lg border border-border bg-card p-5 sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#74847b]">
-            Later, not lost
-          </p>
-          <h2 className="mt-1 text-2xl font-semibold tracking-[-0.035em] text-[#233d36]">
+          <h2 className="text-lg font-semibold text-foreground">
             Future Plans
           </h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#74817b]">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             Keep promising ideas visible without forcing them onto today&apos;s schedule.
           </p>
         </div>
@@ -95,7 +92,6 @@ export function ProjectFuturePlansSection({ project }: { project: Project }) {
             setOpen(true);
           }}
           disabled={project.status === "archived"}
-          className="min-h-11 rounded-xl bg-[#173b35] text-white"
         >
           <Plus aria-hidden />
           Add future plan
@@ -116,14 +112,14 @@ export function ProjectFuturePlansSection({ project }: { project: Project }) {
               onClick={() => setFilter(item.value)}
               aria-pressed={active}
               className={cn(
-                "inline-flex min-h-11 min-w-max items-center gap-2 rounded-xl border px-3.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#58786b]",
+                "inline-flex min-h-11 min-w-max items-center gap-2 rounded-md border px-3.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 active
-                  ? "border-[#b9c9bc] bg-[#eaf0e9] text-[#2d5147]"
-                  : "border-[#e0e6df] bg-[#fbfcfa] text-[#718078] hover:bg-white",
+                  ? "border-primary/40 bg-primary/10 text-primary"
+                  : "border-border bg-muted text-muted-foreground hover:bg-card",
               )}
             >
               {item.label}
-              <span className="rounded-full bg-white/80 px-1.5 py-0.5 text-[9px]">
+              <span className="rounded-full bg-card/80 px-1.5 py-0.5 text-[9px]">
                 {count}
               </span>
             </button>
@@ -134,7 +130,7 @@ export function ProjectFuturePlansSection({ project }: { project: Project }) {
       {message ? (
         <p
           role="status"
-          className="mt-4 rounded-xl border border-[#cfe0d3] bg-[#f1f8f1] px-4 py-3 text-sm text-[#356044]"
+          className="mt-4 rounded-md border border-[#d3e5d4] bg-[#edf3ec] px-3.5 py-2.5 text-sm text-[#448361]"
         >
           {message}
         </p>
@@ -143,7 +139,7 @@ export function ProjectFuturePlansSection({ project }: { project: Project }) {
       {error ? (
         <div
           role="alert"
-          className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+          className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-sm text-destructive"
         >
           <span>{error}</span>
           <Button variant="outline" size="sm" onClick={() => void load()}>
@@ -153,7 +149,7 @@ export function ProjectFuturePlansSection({ project }: { project: Project }) {
       ) : null}
 
       {loading ? (
-        <div className="flex min-h-72 items-center justify-center gap-2 text-sm text-[#77857f]">
+        <div className="flex min-h-72 items-center justify-center gap-2 text-sm text-muted-foreground">
           <LoaderCircle className="size-5 animate-spin" aria-hidden />
           Loading future plans...
         </div>
@@ -162,17 +158,17 @@ export function ProjectFuturePlansSection({ project }: { project: Project }) {
           {visiblePlans.map((plan) => (
             <article
               key={plan.id}
-              className="group flex min-h-48 flex-col rounded-2xl border border-[#e0e6df] bg-[#fbfcfa] p-4 transition-all hover:border-[#ccd7ce] hover:bg-white hover:shadow-[0_10px_28px_rgba(40,60,51,0.06)]"
+              className="group flex min-h-48 flex-col rounded-md border border-border bg-muted p-4 transition-all hover:border-border hover:bg-card hover:shadow-notion"
             >
               <div className="flex items-start justify-between gap-3">
                 <span
                   className={cn(
-                    "rounded-full px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.08em]",
+                    "rounded px-1.5 py-0.5 text-[11px] font-medium",
                     plan.status === "completed"
-                      ? "bg-[#e5f3e8] text-[#3f6d4b]"
+                      ? "bg-[#dbeddb] text-[#448361]"
                       : plan.status === "in_progress"
-                        ? "bg-[#fff1d8] text-[#8a641f]"
-                        : "bg-[#e9eef4] text-[#52677b]",
+                        ? "bg-[#e7f3f8] text-[#2b6a9b]"
+                        : "bg-[#f1f0ef] text-[#787774]",
                   )}
                 >
                   {plan.status.replace("_", " ")}
@@ -185,25 +181,25 @@ export function ProjectFuturePlansSection({ project }: { project: Project }) {
                     setOpen(true);
                   }}
                   aria-label={`Edit ${plan.title}`}
-                  className="flex size-11 shrink-0 items-center justify-center rounded-xl text-[#7e8b85] transition-colors hover:bg-[#eef2ed] hover:text-[#34564c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#58786b]"
+                  className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <Edit3 className="size-4" aria-hidden />
                 </button>
               </div>
-              <h3 className="mt-3 break-words text-base font-semibold text-[#29423b]">
+              <h3 className="mt-3 break-words text-base font-semibold text-foreground">
                 {plan.title}
               </h3>
-              <p className="mt-2 line-clamp-3 text-xs leading-5 text-[#7b8882]">
+              <p className="mt-2 line-clamp-3 text-xs leading-5 text-muted-foreground">
                 {plan.description || "No details added yet."}
               </p>
               <div className="mt-auto pt-4">
                 {plan.target_date ? (
-                  <p className="flex items-center gap-1.5 border-t border-[#e9ede8] pt-3 text-[10px] font-semibold text-[#7e8c85]">
+                  <p className="flex items-center gap-1.5 border-t border-border pt-3 text-[10px] font-medium text-muted-foreground">
                     <CalendarDays className="size-3.5" aria-hidden />
                     Target {formatTargetDate(plan.target_date)}
                   </p>
                 ) : (
-                  <p className="border-t border-[#e9ede8] pt-3 text-[10px] font-medium text-[#919c97]">
+                  <p className="border-t border-border pt-3 text-[10px] font-medium text-muted-foreground">
                     No target date
                   </p>
                 )}
@@ -212,12 +208,12 @@ export function ProjectFuturePlansSection({ project }: { project: Project }) {
           ))}
         </div>
       ) : (
-        <div className="mt-5 rounded-2xl border border-dashed border-[#dce3da] bg-[#fbfcfa] px-5 py-14 text-center">
-          <Lightbulb className="mx-auto size-7 text-[#83928a]" aria-hidden />
-          <h3 className="mt-4 text-base font-semibold text-[#304a43]">
+        <div className="mt-5 rounded-md border border-dashed border-border bg-muted px-5 py-14 text-center">
+          <Lightbulb className="mx-auto size-7 text-muted-foreground" aria-hidden />
+          <h3 className="mt-4 text-base font-semibold text-foreground">
             {plans.length ? "No plans match this filter" : "No future plans yet"}
           </h3>
-          <p className="mx-auto mt-1 max-w-md text-sm leading-6 text-[#7d8a84]">
+          <p className="mx-auto mt-1 max-w-md text-sm leading-6 text-muted-foreground">
             {plans.length
               ? "Choose another status to see the rest of your plans."
               : "Capture an idea now and turn it into scheduled work when the time is right."}

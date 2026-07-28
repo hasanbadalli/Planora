@@ -96,16 +96,13 @@ export function ProjectNotesSection({ project }: { project: Project }) {
   }
 
   return (
-    <section className="rounded-[22px] border border-[#dce3da] bg-white p-5 sm:p-6">
+    <section className="rounded-lg border border-border bg-card p-5 sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#74847b]">
-            Project knowledge
-          </p>
-          <h2 className="mt-1 text-2xl font-semibold tracking-[-0.035em] text-[#233d36]">
+          <h2 className="text-lg font-semibold text-foreground">
             Notes
           </h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#74817b]">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             Store decisions, references, and context without mixing them into tasks.
           </p>
         </div>
@@ -116,7 +113,6 @@ export function ProjectNotesSection({ project }: { project: Project }) {
             setOpen(true);
           }}
           disabled={project.status === "archived"}
-          className="min-h-11 rounded-xl bg-[#173b35] text-white"
         >
           <Plus aria-hidden />
           Add note
@@ -125,7 +121,7 @@ export function ProjectNotesSection({ project }: { project: Project }) {
 
       <div className="relative mt-5 max-w-md">
         <Search
-          className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#87938d]"
+          className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
           aria-hidden
         />
         <Input
@@ -134,14 +130,14 @@ export function ProjectNotesSection({ project }: { project: Project }) {
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search project notes"
           aria-label="Search project notes"
-          className="h-11 rounded-xl pl-10"
+          className="h-11 rounded-md pl-10"
         />
       </div>
 
       {message ? (
         <p
           role="status"
-          className="mt-4 rounded-xl border border-[#cfe0d3] bg-[#f1f8f1] px-4 py-3 text-sm text-[#356044]"
+          className="mt-4 rounded-md border border-[#d3e5d4] bg-[#edf3ec] px-3.5 py-2.5 text-sm text-[#448361]"
         >
           {message}
         </p>
@@ -150,7 +146,7 @@ export function ProjectNotesSection({ project }: { project: Project }) {
       {error ? (
         <div
           role="alert"
-          className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+          className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-sm text-destructive"
         >
           <span>{error}</span>
           <Button variant="outline" size="sm" onClick={() => void load()}>
@@ -160,7 +156,7 @@ export function ProjectNotesSection({ project }: { project: Project }) {
       ) : null}
 
       {loading ? (
-        <div className="flex min-h-72 items-center justify-center gap-2 text-sm text-[#77857f]">
+        <div className="flex min-h-72 items-center justify-center gap-2 text-sm text-muted-foreground">
           <LoaderCircle className="size-5 animate-spin" aria-hidden />
           Loading notes...
         </div>
@@ -169,11 +165,11 @@ export function ProjectNotesSection({ project }: { project: Project }) {
           {visibleNotes.map((note) => (
             <article
               key={note.id}
-              className="group flex min-h-56 flex-col rounded-2xl border border-[#e0e6df] bg-[#fbfcfa] p-4 transition-all hover:border-[#ccd7ce] hover:bg-white hover:shadow-[0_10px_28px_rgba(40,60,51,0.06)]"
+              className="group flex min-h-56 flex-col rounded-md border border-border bg-muted p-4 transition-all hover:border-border hover:bg-card hover:shadow-notion"
             >
               <div className="flex items-start justify-between gap-3">
                 <span
-                  className="flex size-10 items-center justify-center rounded-xl"
+                  className="flex size-10 items-center justify-center rounded-md"
                   style={{
                     color: project.color,
                     backgroundColor: `${project.color}16`,
@@ -190,7 +186,7 @@ export function ProjectNotesSection({ project }: { project: Project }) {
                       setOpen(true);
                     }}
                     aria-label={`Edit ${note.title}`}
-                    className="flex size-11 items-center justify-center rounded-xl text-[#7e8b85] transition-colors hover:bg-[#eef2ed] hover:text-[#34564c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#58786b]"
+                    className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <Pencil className="size-4" aria-hidden />
                   </button>
@@ -199,7 +195,7 @@ export function ProjectNotesSection({ project }: { project: Project }) {
                     onClick={() => void removeNote(note)}
                     disabled={deletingId === note.id}
                     aria-label={`Delete ${note.title}`}
-                    className="flex size-11 items-center justify-center rounded-xl text-[#8b8580] transition-colors hover:bg-[#fff1ef] hover:text-[#a3453d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a85c54] disabled:opacity-50"
+                    className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
                   >
                     {deletingId === note.id ? (
                       <LoaderCircle className="size-4 animate-spin" aria-hidden />
@@ -209,25 +205,25 @@ export function ProjectNotesSection({ project }: { project: Project }) {
                   </button>
                 </div>
               </div>
-              <h3 className="mt-4 break-words text-base font-semibold text-[#29423b]">
+              <h3 className="mt-4 break-words text-base font-semibold text-foreground">
                 {note.title}
               </h3>
-              <p className="mt-2 line-clamp-5 whitespace-pre-wrap text-xs leading-5 text-[#75827c]">
+              <p className="mt-2 line-clamp-5 whitespace-pre-wrap text-xs leading-5 text-muted-foreground">
                 {note.content || "No content added yet."}
               </p>
-              <p className="mt-auto border-t border-[#e9ede8] pt-3 text-[10px] font-medium text-[#8c9892]">
+              <p className="mt-auto border-t border-border pt-3 text-[10px] font-medium text-muted-foreground">
                 Updated {formatUpdatedDate(note.updated_at)}
               </p>
             </article>
           ))}
         </div>
       ) : (
-        <div className="mt-5 rounded-2xl border border-dashed border-[#dce3da] bg-[#fbfcfa] px-5 py-14 text-center">
-          <FileText className="mx-auto size-7 text-[#83928a]" aria-hidden />
-          <h3 className="mt-4 text-base font-semibold text-[#304a43]">
+        <div className="mt-5 rounded-md border border-dashed border-border bg-muted px-5 py-14 text-center">
+          <FileText className="mx-auto size-7 text-muted-foreground" aria-hidden />
+          <h3 className="mt-4 text-base font-semibold text-foreground">
             {notes.length ? "No notes match your search" : "No notes yet"}
           </h3>
-          <p className="mx-auto mt-1 max-w-md text-sm leading-6 text-[#7d8a84]">
+          <p className="mx-auto mt-1 max-w-md text-sm leading-6 text-muted-foreground">
             {notes.length
               ? "Try a different title or keyword."
               : "Create a note for project decisions, research, links, or useful context."}

@@ -9,6 +9,7 @@ import { TaskSummary } from "@/components/tasks/task-summary";
 import { Button } from "@/components/ui/button";
 import { ApiError, Project, Task, getProjects, getTasks } from "@/lib/api";
 import { addDays, dateKey, startOfWeek, weekBounds } from "@/lib/dates";
+import { useWorkspaceRefresh } from "@/lib/workspace-events";
 
 export function WeekCalendar() {
   const [week, setWeek] = useState(() => startOfWeek(new Date()));
@@ -55,6 +56,12 @@ export function WeekCalendar() {
     };
   }, [load]);
 
+  useWorkspaceRefresh(
+    useCallback(() => {
+      void load(true);
+    }, [load]),
+  );
+
   function moveWeek(amount: number) {
     const next = addDays(week, amount * 7);
     setWeek(next);
@@ -71,45 +78,34 @@ export function WeekCalendar() {
   );
 
   return (
-    <div className="mx-auto max-w-[1600px] px-4 py-5 sm:px-7 sm:py-6 xl:px-10">
-      <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+    <div className="mx-auto max-w-[1500px] px-4 py-6 sm:px-8 sm:py-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#70867a]">
-            Weekly time map
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">
-            Calendar
-          </h1>
-          <p className="mt-2 text-sm text-[#6e7d76]">
-            Drag tasks across days or time. Resize either edge in 15-minute
-            steps.
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight">Calendar</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{rangeLabel}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
           <Button
-            variant="outline"
-            size="icon-lg"
+            variant="ghost"
+            size="icon"
             onClick={() => moveWeek(-1)}
             aria-label="Previous week"
           >
             <ChevronLeft />
           </Button>
-          <div className="min-w-44 text-center">
-            <p className="text-sm font-semibold text-[#28423c]">{rangeLabel}</p>
-            <button
-              onClick={() => {
-                const today = new Date();
-                setWeek(startOfWeek(today));
-                setSelectedDate(dateKey(today));
-              }}
-              className="mt-0.5 text-xs font-medium text-[#71827a] hover:text-[#28423c]"
-            >
-              Back to this week
-            </button>
-          </div>
           <Button
             variant="outline"
-            size="icon-lg"
+            onClick={() => {
+              const today = new Date();
+              setWeek(startOfWeek(today));
+              setSelectedDate(dateKey(today));
+            }}
+          >
+            This week
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => moveWeek(1)}
             aria-label="Next week"
           >
@@ -120,10 +116,9 @@ export function WeekCalendar() {
               setEditingTask(null);
               setDialogOpen(true);
             }}
-            className="h-11 bg-[#173b35] px-4 text-white"
           >
             <Plus />
-            Add task
+            New task
           </Button>
         </div>
       </div>
@@ -134,10 +129,10 @@ export function WeekCalendar() {
       {error ? (
         <div
           role="alert"
-          className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+          className="mt-4 flex items-center justify-between gap-3 rounded-md border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-sm text-destructive"
         >
           <span>{error}</span>
-          <button onClick={() => setError(null)} className="font-semibold">
+          <button onClick={() => setError(null)} className="font-medium">
             Dismiss
           </button>
         </div>
@@ -145,7 +140,7 @@ export function WeekCalendar() {
 
       <div className="mt-4">
         {loading ? (
-          <div className="flex min-h-[440px] items-center justify-center gap-2 rounded-[22px] border border-[#dce3da] bg-white text-sm text-[#77857f]">
+          <div className="flex min-h-[440px] items-center justify-center gap-2 rounded-lg border border-border bg-card text-sm text-muted-foreground">
             <LoaderCircle className="animate-spin" />
             Loading your week...
           </div>

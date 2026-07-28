@@ -12,8 +12,6 @@ import {
   Clock3,
   FolderKanban,
   Gauge,
-  Layers3,
-  ListFilter,
   LoaderCircle,
   Minus,
   RotateCcw,
@@ -31,13 +29,14 @@ import {
   getDashboardStats,
   getProjectStats,
 } from "@/lib/api";
+import { STATUS_COLORS } from "@/lib/task-status";
 import { cn } from "@/lib/utils";
 
 const RANGE_OPTIONS: Array<{ value: DashboardRange; label: string }> = [
-  { value: "week", label: "Weekly" },
-  { value: "month", label: "Monthly" },
-  { value: "3_months", label: "Last 3 months" },
-  { value: "6_months", label: "Last 6 months" },
+  { value: "week", label: "Week" },
+  { value: "month", label: "Month" },
+  { value: "3_months", label: "3 months" },
+  { value: "6_months", label: "6 months" },
 ];
 
 const CATEGORY_OPTIONS: Array<{ value: TaskCategory; label: string }> = [
@@ -51,17 +50,10 @@ const CATEGORY_OPTIONS: Array<{ value: TaskCategory; label: string }> = [
   { value: "other", label: "Other" },
 ];
 
-const STATUS_META: Record<
-  TaskStatus,
-  { label: string; color: string; soft: string }
-> = {
-  todo: { label: "Todo", color: "#8a9992", soft: "#eef1ee" },
-  in_progress: {
-    label: "In Progress",
-    color: "#d29a3a",
-    soft: "#fbf2df",
-  },
-  done: { label: "Done", color: "#4f7c68", soft: "#e8f0eb" },
+const STATUS_LABELS: Record<TaskStatus, string> = {
+  todo: "To do",
+  in_progress: "In progress",
+  done: "Done",
 };
 
 interface StatsDashboardProps {
@@ -115,29 +107,32 @@ export function StatsDashboard({ scope, projectId }: StatsDashboardProps) {
     <div
       className={cn(
         "relative",
-        scope === "all"
-          ? "mx-auto max-w-[1440px] px-4 py-6 sm:px-7 sm:py-8 xl:px-10"
-          : "py-2",
+        scope === "all" ? "mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-8" : "py-2",
       )}
     >
-      <header className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-        <div className="max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#70867a]">
-            {scope === "all" ? "Performance overview" : "Project analytics"}
-          </p>
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
           <h1
             className={cn(
-              "mt-2 font-semibold tracking-[-0.05em] text-[#172d2a]",
-              scope === "all" ? "text-3xl sm:text-4xl" : "text-2xl sm:text-3xl",
+              "font-bold tracking-tight",
+              scope === "all" ? "text-2xl" : "text-xl",
             )}
           >
             {scope === "all" ? "Dashboard" : `${projectName ?? "Project"} statistics`}
           </h1>
-          <p className="mt-2 text-sm leading-6 text-[#6e7d76]">
-            {scope === "all"
-              ? "See how planned work turns into progress across your workspace."
-              : "The same performance view, focused only on this project."}
-          </p>
+          {stats ? (
+            <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+              {formatPeriod(stats.period.starts_at, stats.period.ends_at)}
+              <span aria-hidden className="size-1 rounded-full bg-border" />
+              {stats.period.timezone}
+              {loading ? (
+                <span className="inline-flex items-center gap-1 text-xs font-medium">
+                  <LoaderCircle className="size-3 animate-spin" />
+                  Updating
+                </span>
+              ) : null}
+            </p>
+          ) : null}
         </div>
         <DashboardFilters
           range={range}
@@ -148,30 +143,16 @@ export function StatsDashboard({ scope, projectId }: StatsDashboardProps) {
         />
       </header>
 
-      {stats ? (
-        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#7b8882]">
-          <span>{formatPeriod(stats.period.starts_at, stats.period.ends_at)}</span>
-          <span aria-hidden className="size-1 rounded-full bg-[#b9c2bc]" />
-          <span>{stats.period.timezone}</span>
-          {loading ? (
-            <span className="inline-flex items-center gap-1.5 font-medium text-[#4f6b60]">
-              <LoaderCircle className="size-3.5 animate-spin" />
-              Updating
-            </span>
-          ) : null}
-        </div>
-      ) : null}
-
       {error && stats ? (
         <div
           role="alert"
-          className="mt-5 flex flex-col gap-3 rounded-xl border border-[#ecd1cb] bg-[#fff8f6] px-4 py-3 text-sm text-[#91483f] sm:flex-row sm:items-center sm:justify-between"
+          className="mt-4 flex flex-col gap-3 rounded-md border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-sm text-destructive sm:flex-row sm:items-center sm:justify-between"
         >
           <span>{error} The last loaded values remain visible.</span>
           <button
             type="button"
             onClick={() => void load()}
-            className="inline-flex min-h-9 items-center gap-1.5 self-start rounded-lg px-2.5 font-semibold hover:bg-[#f8e9e5] sm:self-auto"
+            className="inline-flex min-h-8 items-center gap-1.5 self-start rounded-md px-2 font-medium hover:bg-destructive/10 sm:self-auto"
           >
             <RotateCcw className="size-3.5" />
             Try again
@@ -204,53 +185,43 @@ function DashboardFilters({
   onCategoryChange: (category: TaskCategory | "") => void;
 }) {
   return (
-    <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end">
-      <div className="min-w-0">
-        <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#78877f]">
-          Period
-        </span>
-        <div className="max-w-full overflow-x-auto rounded-xl border border-[#dce3da] bg-white p-1">
-          <div className="flex min-w-max" role="group" aria-label="Dashboard period">
-            {RANGE_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                aria-pressed={range === option.value}
-                disabled={loading && range === option.value}
-                onClick={() => onRangeChange(option.value)}
-                className={cn(
-                  "min-h-9 rounded-lg px-3 text-xs font-semibold transition-colors",
-                  range === option.value
-                    ? "bg-[#1f403a] text-white shadow-sm"
-                    : "text-[#6e7b75] hover:bg-[#f0f3ee] hover:text-[#29483f]",
-                )}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
+    <div className="flex min-w-0 flex-wrap items-center gap-2">
+      <div className="max-w-full overflow-x-auto rounded-md border border-border bg-muted p-0.5">
+        <div className="flex min-w-max" role="group" aria-label="Dashboard period">
+          {RANGE_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              aria-pressed={range === option.value}
+              disabled={loading && range === option.value}
+              onClick={() => onRangeChange(option.value)}
+              className={cn(
+                "min-h-7 rounded px-2.5 text-xs font-medium transition-colors",
+                range === option.value
+                  ? "bg-card text-foreground shadow-notion"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {option.label}
+            </button>
+          ))}
         </div>
       </div>
-      <label className="block shrink-0">
-        <span className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#78877f]">
-          <ListFilter className="size-3.5" />
-          Category
-        </span>
-        <select
-          value={category}
-          onChange={(event) =>
-            onCategoryChange(event.target.value as TaskCategory | "")
-          }
-          className="h-11 w-full min-w-44 rounded-xl border border-[#dce3da] bg-white px-3 text-sm font-semibold text-[#344e46] outline-none transition focus:border-[#789487] focus:ring-2 focus:ring-[#789487]/20 sm:w-auto"
-        >
-          <option value="">All categories</option>
-          {CATEGORY_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </label>
+      <select
+        value={category}
+        aria-label="Category filter"
+        onChange={(event) =>
+          onCategoryChange(event.target.value as TaskCategory | "")
+        }
+        className="h-8 rounded-md border border-border bg-card px-2 text-sm text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/40"
+      >
+        <option value="">All categories</option>
+        {CATEGORY_OPTIONS.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }
@@ -269,9 +240,9 @@ function DashboardContent({
 
   const cards = [
     {
-      label: "Completed tasks",
+      label: "Completed",
       value: formatNumber(stats.summary.done_tasks),
-      detail: `${formatNumber(stats.summary.total_tasks)} total in this period`,
+      detail: `${formatNumber(stats.summary.total_tasks)} total in period`,
       icon: CheckCircle2,
       trend: stats.trends.done_tasks,
       positiveUp: true,
@@ -279,15 +250,15 @@ function DashboardContent({
     {
       label: "Completion rate",
       value: formatPercentage(stats.summary.completion_rate),
-      detail: "Done ÷ all tasks in this period",
+      detail: "Done ÷ all tasks",
       icon: Gauge,
       trend: stats.trends.completion_rate,
       positiveUp: true,
     },
     {
-      label: "Completed planned time",
+      label: "Completed time",
       value: formatDuration(stats.summary.completed_planned_minutes),
-      detail: `${formatDuration(stats.summary.planned_minutes)} planned effort`,
+      detail: `${formatDuration(stats.summary.planned_minutes)} planned`,
       icon: Clock3,
       trend: stats.trends.completed_planned_minutes,
       positiveUp: true,
@@ -295,7 +266,7 @@ function DashboardContent({
     {
       label: "Open tasks",
       value: formatNumber(openTasks),
-      detail: `${formatNumber(stats.summary.in_progress_tasks)} currently in progress`,
+      detail: `${formatNumber(stats.summary.in_progress_tasks)} in progress`,
       icon: CircleDashed,
       trend: buildTrend(openTasks, previousOpen),
       positiveUp: false,
@@ -304,10 +275,10 @@ function DashboardContent({
   ];
 
   return (
-    <div className="mt-6 space-y-5">
+    <div className="mt-5 space-y-4">
       {isEmpty ? (
-        <div className="flex items-start gap-3 rounded-2xl border border-[#dce5da] bg-[#f9fbf7] px-4 py-3.5 text-sm text-[#5e7068]">
-          <BarChart3 className="mt-0.5 size-4 shrink-0 text-[#66806f]" />
+        <div className="flex items-start gap-3 rounded-md border border-border bg-muted px-3.5 py-3 text-sm text-muted-foreground">
+          <BarChart3 className="mt-0.5 size-4 shrink-0" />
           <p>
             No tasks match this period and category yet. Your dashboard will
             update as soon as work is planned.
@@ -321,31 +292,28 @@ function DashboardContent({
         ))}
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(300px,0.75fr)]">
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(300px,0.75fr)]">
         <Panel>
           <PanelHeader
-            eyebrow="Activity"
-            title="Task completion over time"
-            description="Completed tasks compared with everything planned in each interval."
+            title="Completion over time"
+            description="Completed tasks vs. everything planned in each interval."
           />
           <ActivityChart stats={stats} />
         </Panel>
         <Panel>
           <PanelHeader
-            eyebrow="Workflow"
-            title="Status distribution"
-            description="A compact view of what is waiting, active, and done."
+            title="Status"
+            description="What is waiting, active, and done."
           />
           <StatusDistribution stats={stats} />
         </Panel>
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-2">
+      <section className="grid gap-4 xl:grid-cols-2">
         <Panel>
           <PanelHeader
-            eyebrow="Focus mix"
             title="Categories"
-            description="Where tasks and completed planned time are concentrated."
+            description="Where tasks and completed time are concentrated."
           />
           <CategoryBreakdown stats={stats} />
         </Panel>
@@ -353,18 +321,16 @@ function DashboardContent({
           {scope === "all" ? (
             <>
               <PanelHeader
-                eyebrow="Portfolio"
                 title="Project progress"
-                description="Done tasks divided by all tasks in the selected period."
+                description="Done tasks ÷ all tasks in the selected period."
               />
               <ProjectProgress stats={stats} />
             </>
           ) : (
             <>
               <PanelHeader
-                eyebrow="Project pulse"
                 title="Progress snapshot"
-                description="A focused summary for the selected project and period."
+                description="A focused summary for this project and period."
               />
               <ProjectSnapshot stats={stats} />
             </>
@@ -393,20 +359,18 @@ function MetricCard({
   neutral?: boolean;
 }) {
   return (
-    <article className="rounded-[20px] border border-[#dfe5dc] bg-white p-5 shadow-[0_8px_28px_rgba(35,53,46,0.04)]">
-      <div className="flex items-start justify-between gap-3">
-        <span className="flex size-10 items-center justify-center rounded-xl bg-[#edf2ea] text-[#4e6e61]">
-          <Icon className="size-[18px]" />
-        </span>
+    <article className="rounded-lg border border-border bg-card p-4 shadow-notion">
+      <div className="flex items-center justify-between gap-3">
+        <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+          <Icon className="size-3.5" strokeWidth={1.8} />
+          {label}
+        </p>
         <TrendBadge trend={trend} positiveUp={positiveUp} neutral={neutral} />
       </div>
-      <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-[#77867f]">
-        {label}
-      </p>
-      <p className="mt-2 text-[30px] font-semibold tracking-[-0.045em] text-[#1d3731]">
+      <p className="mt-3 text-[26px] font-bold tracking-tight text-foreground">
         {value}
       </p>
-      <p className="mt-1 text-xs leading-5 text-[#87938d]">{detail}</p>
+      <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{detail}</p>
     </article>
   );
 }
@@ -435,21 +399,21 @@ function TrendBadge({
     direction === "new"
       ? "New"
       : trend.change_percent === null
-        ? "No baseline"
+        ? "–"
         : direction === "flat"
-          ? "No change"
+          ? "0%"
           : `${Math.abs(trend.change_percent).toFixed(0)}%`;
 
   return (
     <span
       title="Compared with the immediately preceding equivalent period"
       className={cn(
-        "inline-flex min-h-7 items-center gap-1 rounded-full px-2 text-[10px] font-bold",
+        "inline-flex min-h-5 items-center gap-0.5 rounded px-1.5 text-[11px] font-medium",
         neutral || (!isPositive && !isNegative)
-          ? "bg-[#f0f2ef] text-[#68766f]"
+          ? "bg-[#f1f0ef] text-[#787774]"
           : isPositive
-            ? "bg-[#e8f2ea] text-[#3c6c55]"
-            : "bg-[#f9ece9] text-[#9a5148]",
+            ? "bg-[#dbeddb] text-[#448361]"
+            : "bg-[#fdebec] text-[#d44c47]",
       )}
     >
       <Icon className="size-3" />
@@ -476,7 +440,7 @@ function ActivityChart({ stats }: { stats: DashboardStats }) {
   const labelEvery = items.length > 16 ? Math.ceil(items.length / 8) : 1;
 
   return (
-    <div className="mt-5">
+    <div className="mt-4">
       <div className="overflow-x-auto pb-1">
         <svg
           role="img"
@@ -494,7 +458,7 @@ function ActivityChart({ stats }: { stats: DashboardStats }) {
                   x2={width - 16}
                   y1={y}
                   y2={y}
-                  stroke="#e9ede8"
+                  stroke="#efefed"
                   strokeWidth="1"
                 />
                 <text
@@ -502,7 +466,7 @@ function ActivityChart({ stats }: { stats: DashboardStats }) {
                   y={y + 4}
                   textAnchor="end"
                   fontSize="10"
-                  fill="#8a9690"
+                  fill="#9b9a97"
                 >
                   {Math.round(maxValue * ratio)}
                 </text>
@@ -522,16 +486,16 @@ function ActivityChart({ stats }: { stats: DashboardStats }) {
                   y={baseline - totalHeight}
                   width={barWidth}
                   height={Math.max(totalHeight, 2)}
-                  rx="5"
-                  fill="#e3e9e3"
+                  rx="3"
+                  fill="#e9e9e7"
                 />
                 <rect
                   x={x}
                   y={baseline - doneHeight}
                   width={barWidth}
                   height={doneHeight}
-                  rx="5"
-                  fill="#557d69"
+                  rx="3"
+                  fill="#2383e2"
                 />
                 {showLabel ? (
                   <text
@@ -539,7 +503,7 @@ function ActivityChart({ stats }: { stats: DashboardStats }) {
                     y={baseline + 24}
                     textAnchor="middle"
                     fontSize="10"
-                    fill="#7c8983"
+                    fill="#9b9a97"
                   >
                     {shortChartLabel(item.label)}
                   </text>
@@ -549,16 +513,16 @@ function ActivityChart({ stats }: { stats: DashboardStats }) {
           })}
         </svg>
       </div>
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-3 border-t border-[#edf0ec] pt-3">
-        <div className="flex items-center gap-4 text-xs text-[#718079]">
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
+        <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
-            <span className="size-2.5 rounded-[3px] bg-[#557d69]" /> Done
+            <span className="size-2.5 rounded-[3px] bg-[#2383e2]" /> Done
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <span className="size-2.5 rounded-[3px] bg-[#e3e9e3]" /> Total
+            <span className="size-2.5 rounded-[3px] bg-[#e9e9e7]" /> Total
           </span>
         </div>
-        <p className="text-xs font-semibold text-[#5e7068]">
+        <p className="text-xs font-medium text-muted-foreground">
           {formatDuration(stats.summary.completed_planned_minutes)} completed planned time
         </p>
       </div>
@@ -578,40 +542,40 @@ function StatusDistribution({ stats }: { stats: DashboardStats }) {
   const todoEnd = values[0].percentage;
   const progressEnd = todoEnd + values[1].percentage;
   const background = stats.summary.total_tasks
-    ? `conic-gradient(${STATUS_META.todo.color} 0 ${todoEnd}%, ${STATUS_META.in_progress.color} ${todoEnd}% ${progressEnd}%, ${STATUS_META.done.color} ${progressEnd}% 100%)`
-    : "#edf0ed";
+    ? `conic-gradient(${STATUS_COLORS.todo} 0 ${todoEnd}%, ${STATUS_COLORS.in_progress} ${todoEnd}% ${progressEnd}%, ${STATUS_COLORS.done} ${progressEnd}% 100%)`
+    : "#f1f0ef";
 
   return (
-    <div className="mt-6 flex flex-col items-center gap-7 sm:flex-row xl:flex-col 2xl:flex-row">
+    <div className="mt-5 flex flex-col items-center gap-6 sm:flex-row xl:flex-col 2xl:flex-row">
       <div
-        className="relative flex size-40 shrink-0 items-center justify-center rounded-full"
+        className="relative flex size-36 shrink-0 items-center justify-center rounded-full"
         style={{ background }}
         aria-label={`${stats.summary.done_tasks} of ${stats.summary.total_tasks} tasks done`}
       >
-        <div className="flex size-[112px] flex-col items-center justify-center rounded-full bg-white shadow-[inset_0_0_0_1px_#eef1ed]">
-          <span className="text-2xl font-semibold tracking-[-0.04em] text-[#213c35]">
+        <div className="flex size-[100px] flex-col items-center justify-center rounded-full bg-card shadow-[inset_0_0_0_1px_#efefed]">
+          <span className="text-xl font-bold tracking-tight text-foreground">
             {formatPercentage(stats.summary.completion_rate)}
           </span>
-          <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#87938d]">
+          <span className="mt-0.5 text-[10px] font-medium text-muted-foreground">
             complete
           </span>
         </div>
       </div>
-      <div className="w-full space-y-3">
+      <div className="w-full space-y-2">
         {values.map((item) => (
           <div
             key={item.status}
-            className="flex items-center gap-3 rounded-xl border border-[#edf0ec] px-3 py-2.5"
+            className="flex items-center gap-3 rounded-md border border-border px-3 py-2"
           >
             <span
               className="size-2.5 rounded-full"
-              style={{ backgroundColor: STATUS_META[item.status].color }}
+              style={{ backgroundColor: STATUS_COLORS[item.status] }}
             />
-            <span className="min-w-0 flex-1 text-sm font-medium text-[#52665e]">
-              {STATUS_META[item.status].label}
+            <span className="min-w-0 flex-1 text-sm text-muted-foreground">
+              {STATUS_LABELS[item.status]}
             </span>
-            <span className="text-sm font-semibold text-[#243f38]">{item.count}</span>
-            <span className="w-10 text-right text-xs text-[#89958f]">
+            <span className="text-sm font-semibold text-foreground">{item.count}</span>
+            <span className="w-10 text-right text-xs text-muted-foreground">
               {formatPercentage(item.percentage)}
             </span>
           </div>
@@ -629,28 +593,28 @@ function CategoryBreakdown({ stats }: { stats: DashboardStats }) {
   const maxCount = Math.max(1, ...items.map((item) => item.count));
 
   return (
-    <div className="mt-5 max-h-[420px] space-y-4 overflow-y-auto pr-1">
+    <div className="mt-4 max-h-[420px] space-y-4 overflow-y-auto pr-1">
       {items.map((item) => (
         <div key={item.category}>
-          <div className="mb-2 flex items-center gap-2.5">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-[#edf2ec] text-[#506e62]">
-              <TaskCategoryIcon category={item.category} className="size-4" />
+          <div className="mb-1.5 flex items-center gap-2.5">
+            <span className="flex size-7 items-center justify-center rounded-md bg-secondary text-muted-foreground">
+              <TaskCategoryIcon category={item.category} className="size-3.5" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-[#344c45]">
+              <p className="truncate text-sm font-medium text-foreground">
                 {categoryLabel(item.category)}
               </p>
-              <p className="text-[11px] text-[#85918b]">
+              <p className="text-[11px] text-muted-foreground">
                 {item.done_count} done · {formatDuration(item.completed_planned_minutes)} completed
               </p>
             </div>
-            <span className="text-xs font-semibold text-[#5f7169]">
+            <span className="text-xs font-medium text-muted-foreground">
               {item.count} task{item.count === 1 ? "" : "s"}
             </span>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-[#edf0ec]">
+          <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
             <div
-              className="h-full rounded-full bg-[#6d897a] transition-[width] duration-500"
+              className="h-full rounded-full bg-[#2383e2] transition-[width] duration-500"
               style={{ width: `${(item.count / maxCount) * 100}%` }}
             />
           </div>
@@ -665,27 +629,27 @@ function ProjectProgress({ stats }: { stats: DashboardStats }) {
     return <CompactEmpty label="No project-linked tasks in this selection." />;
   }
   return (
-    <div className="mt-5 max-h-[420px] space-y-2.5 overflow-y-auto pr-1">
+    <div className="mt-4 max-h-[420px] space-y-2 overflow-y-auto pr-1">
       {stats.project_progress.map((project) => (
         <Link
           key={project.project_id}
           href={`/projects/${project.project_id}/statistics`}
-          className="group block rounded-xl border border-[#e6ebe5] p-3.5 transition hover:border-[#cbd7ce] hover:bg-[#fafbf9]"
+          className="group block rounded-md border border-border p-3 transition hover:bg-muted"
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <span
-              className="size-3 shrink-0 rounded-full"
+              className="size-2.5 shrink-0 rounded-full"
               style={{ backgroundColor: project.color }}
             />
-            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-[#314a43]">
+            <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
               {project.name}
             </span>
-            <span className="text-xs font-semibold text-[#5b6e66]">
+            <span className="text-xs font-medium text-muted-foreground">
               {formatPercentage(project.completion_rate)}
             </span>
-            <ArrowRight className="size-3.5 text-[#93a098] transition-transform group-hover:translate-x-0.5" />
+            <ArrowRight className="size-3.5 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
           </div>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#edf0ec]">
+          <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-secondary">
             <div
               className="h-full rounded-full transition-[width] duration-500"
               style={{
@@ -694,7 +658,7 @@ function ProjectProgress({ stats }: { stats: DashboardStats }) {
               }}
             />
           </div>
-          <div className="mt-2.5 flex items-center justify-between gap-3 text-[11px] text-[#84908a]">
+          <div className="mt-2 flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
             <span>
               {project.completed_tasks} of {project.total_tasks} done
             </span>
@@ -709,23 +673,22 @@ function ProjectProgress({ stats }: { stats: DashboardStats }) {
 function ProjectSnapshot({ stats }: { stats: DashboardStats }) {
   const open = stats.summary.todo_tasks + stats.summary.in_progress_tasks;
   return (
-    <div className="mt-6">
+    <div className="mt-5">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="text-4xl font-semibold tracking-[-0.05em] text-[#1e3932]">
+          <p className="text-3xl font-bold tracking-tight text-foreground">
             {formatPercentage(stats.summary.completion_rate)}
           </p>
-          <p className="mt-1 text-xs text-[#7d8a84]">period completion</p>
+          <p className="mt-1 text-xs text-muted-foreground">period completion</p>
         </div>
-        <Layers3 className="size-8 text-[#9caaa3]" />
       </div>
-      <div className="mt-5 h-3 overflow-hidden rounded-full bg-[#edf0ec]">
+      <div className="mt-4 h-2 overflow-hidden rounded-full bg-secondary">
         <div
-          className="h-full rounded-full bg-[#557d69] transition-[width] duration-500"
+          className="h-full rounded-full bg-[#2383e2] transition-[width] duration-500"
           style={{ width: `${Math.min(100, stats.summary.completion_rate)}%` }}
         />
       </div>
-      <div className="mt-6 grid grid-cols-2 gap-3">
+      <div className="mt-5 grid grid-cols-2 gap-2">
         <SnapshotCell label="Completed" value={stats.summary.done_tasks.toString()} />
         <SnapshotCell label="Open" value={open.toString()} />
         <SnapshotCell
@@ -743,69 +706,60 @@ function ProjectSnapshot({ stats }: { stats: DashboardStats }) {
 
 function SnapshotCell({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-[#e9ede8] bg-[#fafbf9] p-3">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#84918b]">
-        {label}
-      </p>
-      <p className="mt-1.5 text-lg font-semibold text-[#304b43]">{value}</p>
+    <div className="rounded-md border border-border bg-muted p-3">
+      <p className="text-[11px] font-medium text-muted-foreground">{label}</p>
+      <p className="mt-1 text-base font-semibold text-foreground">{value}</p>
     </div>
   );
 }
 
 function Panel({ children }: { children: React.ReactNode }) {
   return (
-    <article className="min-w-0 rounded-[22px] border border-[#dfe5dc] bg-white p-5 shadow-[0_8px_28px_rgba(35,53,46,0.035)] sm:p-6">
+    <article className="min-w-0 rounded-lg border border-border bg-card p-4 shadow-notion sm:p-5">
       {children}
     </article>
   );
 }
 
 function PanelHeader({
-  eyebrow,
   title,
   description,
 }: {
-  eyebrow: string;
   title: string;
   description: string;
 }) {
   return (
     <div>
-      <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#789084]">
-        {eyebrow}
-      </p>
-      <h2 className="mt-2 text-lg font-semibold tracking-[-0.025em] text-[#223d36]">
-        {title}
-      </h2>
-      <p className="mt-1 text-xs leading-5 text-[#84908a]">{description}</p>
+      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+      <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{description}</p>
     </div>
   );
 }
 
 function CompactEmpty({ label }: { label: string }) {
   return (
-    <div className="mt-5 flex min-h-44 flex-col items-center justify-center rounded-xl border border-dashed border-[#dfe5dd] bg-[#fafbf9] px-4 text-center">
-      <FolderKanban className="size-6 text-[#9aa69f]" />
-      <p className="mt-3 text-sm text-[#77847e]">{label}</p>
+    <div className="mt-4 flex min-h-44 flex-col items-center justify-center rounded-md border border-dashed border-border bg-muted px-4 text-center">
+      <FolderKanban className="size-6 text-muted-foreground/60" />
+      <p className="mt-3 text-sm text-muted-foreground">{label}</p>
     </div>
   );
 }
 
 function DashboardSkeleton() {
   return (
-    <div className="mt-6 animate-pulse space-y-5" aria-label="Loading dashboard">
+    <div className="mt-5 animate-pulse space-y-4" aria-label="Loading dashboard">
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, index) => (
-          <div key={index} className="h-44 rounded-[20px] border border-[#e2e7e0] bg-white p-5">
-            <div className="size-10 rounded-xl bg-[#edf1ec]" />
-            <div className="mt-7 h-3 w-24 rounded bg-[#edf1ec]" />
-            <div className="mt-4 h-8 w-32 rounded bg-[#e7ece7]" />
+          <div key={index} className="h-32 rounded-lg border border-border bg-card p-4">
+            <div className="h-3 w-24 rounded bg-muted" />
+            <div className="mt-5 h-7 w-20 rounded bg-secondary" />
+            <div className="mt-2 h-3 w-28 rounded bg-muted" />
           </div>
         ))}
       </div>
-      <div className="grid gap-5 xl:grid-cols-[1.65fr_0.75fr]">
-        <div className="h-[390px] rounded-[22px] border border-[#e2e7e0] bg-white" />
-        <div className="h-[390px] rounded-[22px] border border-[#e2e7e0] bg-white" />
+      <div className="grid gap-4 xl:grid-cols-[1.65fr_0.75fr]">
+        <div className="h-[360px] rounded-lg border border-border bg-card" />
+        <div className="h-[360px] rounded-lg border border-border bg-card" />
       </div>
     </div>
   );
@@ -819,12 +773,10 @@ function DashboardError({
   onRetry: () => void;
 }) {
   return (
-    <div className="mt-8 flex min-h-80 flex-col items-center justify-center rounded-[22px] border border-[#ecd4ce] bg-white px-6 text-center">
-      <BarChart3 className="size-8 text-[#a66a60]" />
-      <h2 className="mt-4 text-lg font-semibold text-[#553a35]">
-        Dashboard unavailable
-      </h2>
-      <p className="mt-2 max-w-md text-sm leading-6 text-[#816b66]">{message}</p>
+    <div className="mt-6 flex min-h-72 flex-col items-center justify-center rounded-lg border border-border bg-card px-6 text-center">
+      <BarChart3 className="size-7 text-muted-foreground/60" />
+      <h2 className="mt-4 text-base font-semibold">Dashboard unavailable</h2>
+      <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">{message}</p>
       <Button variant="outline" onClick={onRetry} className="mt-5">
         <RotateCcw className="size-4" />
         Try again

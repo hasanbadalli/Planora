@@ -53,73 +53,79 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/*
+ * Planora design tokens — "Notion light".
+ * Warm near-black ink on white, quiet warm grays, a single blue accent,
+ * hairline borders, and small radii. Status/tag colors follow the same
+ * muted Notion-style palette (gray / blue / green / orange / red).
+ */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: #ffffff;
+  --foreground: #37352f;
+  --card: #ffffff;
+  --card-foreground: #37352f;
+  --popover: #ffffff;
+  --popover-foreground: #37352f;
+  --primary: #2383e2;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f1ef;
+  --secondary-foreground: #37352f;
+  --muted: #f7f7f5;
+  --muted-foreground: #787774;
+  --accent: #f1f1ef;
+  --accent-foreground: #37352f;
+  --destructive: #d44c47;
+  --border: #e9e9e7;
+  --input: #e3e2e0;
+  --ring: #93c5ec;
+  --chart-1: #2383e2;
+  --chart-2: #448361;
+  --chart-3: #cb912f;
+  --chart-4: #d44c47;
+  --chart-5: #9065b0;
+  --radius: 0.5rem;
+  --sidebar: #f7f7f5;
+  --sidebar-foreground: #5f5e5b;
+  --sidebar-primary: #37352f;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ebebe9;
+  --sidebar-accent-foreground: #37352f;
+  --sidebar-border: #e9e9e7;
+  --sidebar-ring: #93c5ec;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #191919;
+  --foreground: #d4d4d4;
+  --card: #202020;
+  --card-foreground: #d4d4d4;
+  --popover: #252525;
+  --popover-foreground: #d4d4d4;
+  --primary: #2383e2;
+  --primary-foreground: #ffffff;
+  --secondary: #2c2c2c;
+  --secondary-foreground: #d4d4d4;
+  --muted: #232323;
+  --muted-foreground: #9b9b9b;
+  --accent: #2c2c2c;
+  --accent-foreground: #d4d4d4;
+  --destructive: #e16f6a;
+  --border: #2e2e2e;
+  --input: #373737;
+  --ring: #2f5f8f;
+  --chart-1: #2383e2;
+  --chart-2: #448361;
+  --chart-3: #cb912f;
+  --chart-4: #d44c47;
+  --chart-5: #9065b0;
+  --sidebar: #202020;
+  --sidebar-foreground: #9b9b9b;
+  --sidebar-primary: #d4d4d4;
+  --sidebar-primary-foreground: #191919;
+  --sidebar-accent: #2c2c2c;
+  --sidebar-accent-foreground: #d4d4d4;
+  --sidebar-border: #2e2e2e;
+  --sidebar-ring: #2f5f8f;
 }
 
 @layer base {
@@ -132,5 +138,19 @@ body {
   html {
     @apply font-sans;
     scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  /* Notion-style hairline card shadow: a whisper, not a glow. */
+  .shadow-notion {
+    box-shadow:
+      rgba(15, 15, 15, 0.04) 0px 1px 2px,
+      rgba(15, 15, 15, 0.03) 0px 2px 4px;
+  }
+  .shadow-notion-lg {
+    box-shadow:
+      rgba(15, 15, 15, 0.05) 0px 2px 4px,
+      rgba(15, 15, 15, 0.08) 0px 10px 24px;
   }
 }

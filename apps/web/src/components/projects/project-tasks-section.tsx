@@ -22,6 +22,7 @@ import {
   startOfWeek,
   weekBounds,
 } from "@/lib/dates";
+import { useWorkspaceRefresh } from "@/lib/workspace-events";
 import { cn } from "@/lib/utils";
 
 export function ProjectTasksSection({
@@ -77,6 +78,12 @@ export function ProjectTasksSection({
     };
   }, [load]);
 
+  useWorkspaceRefresh(
+    useCallback(() => {
+      void load(true);
+    }, [load]),
+  );
+
   const selectedTasks = tasks.filter(
     (task) => task.occurrence_date === selectedKey,
   );
@@ -105,20 +112,17 @@ export function ProjectTasksSection({
   }
 
   return (
-    <section className="min-w-0 rounded-[22px] border border-[#dce3da] bg-white p-4 sm:p-6">
+    <section className="min-w-0 rounded-lg border border-border bg-card p-4 sm:p-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#74847b]">
-            Daily project board
-          </p>
-          <h2 className="mt-1 text-2xl font-semibold tracking-[-0.035em] text-[#233d36]">
+          <h2 className="text-lg font-semibold text-foreground">
             {selectedDate.toLocaleDateString("en", {
               weekday: "long",
               month: "long",
               day: "numeric",
             })}
           </h2>
-          <p className="mt-1 text-sm text-[#7e8b85]">
+          <p className="mt-1 text-sm text-muted-foreground">
             Move between days and keep this project&apos;s execution in one focused view.
           </p>
         </div>
@@ -128,7 +132,6 @@ export function ProjectTasksSection({
             size="icon"
             onClick={() => setSelectedDate((day) => addDays(day, -1))}
             aria-label="Previous project day"
-            className="min-h-11 min-w-11 rounded-xl"
           >
             <ChevronLeft aria-hidden />
           </Button>
@@ -139,14 +142,13 @@ export function ProjectTasksSection({
             onChange={(event) =>
               setSelectedDate(parseDateKey(event.target.value))
             }
-            className="h-11 min-w-36 rounded-xl border border-[#d9e1d8] bg-white px-3 text-xs font-semibold text-[#39524b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#58786b]"
+            className="h-11 min-w-36 rounded-md border border-border bg-card px-3 text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
           <Button
             variant="outline"
             size="icon"
             onClick={() => setSelectedDate((day) => addDays(day, 1))}
             aria-label="Next project day"
-            className="min-h-11 min-w-11 rounded-xl"
           >
             <ChevronRight aria-hidden />
           </Button>
@@ -155,7 +157,6 @@ export function ProjectTasksSection({
               setEditingTask(null);
               setTaskOpen(true);
             }}
-            className="min-h-11 rounded-xl bg-[#173b35] text-white"
             disabled={project.status === "archived"}
           >
             <Plus aria-hidden />
@@ -179,19 +180,19 @@ export function ProjectTasksSection({
                 onClick={() => setSelectedDate(day)}
                 aria-pressed={active}
                 className={cn(
-                  "min-h-[76px] rounded-xl border px-2 py-2.5 text-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#58786b]",
+                  "min-h-[76px] rounded-md border px-2 py-2.5 text-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   active
-                    ? "border-[#58786b] bg-[#edf3e9] shadow-sm"
-                    : "border-[#e1e6df] bg-[#fbfcfa] hover:border-[#c6d1c8] hover:bg-white",
+                    ? "border-primary/50 bg-primary/5 shadow-notion"
+                    : "border-border bg-muted hover:border-border hover:bg-card",
                 )}
               >
-                <span className="block text-[9px] font-bold uppercase tracking-[0.1em] text-[#7a8881]">
+                <span className="block text-[9px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
                   {day.toLocaleDateString("en", { weekday: "short" })}
                 </span>
-                <span className="mt-1 block text-sm font-semibold text-[#29423b]">
+                <span className="mt-1 block text-sm font-semibold text-foreground">
                   {day.getDate()}
                 </span>
-                <span className="mt-1 block text-[9px] font-medium text-[#89958f]">
+                <span className="mt-1 block text-[9px] font-medium text-muted-foreground">
                   {count} {count === 1 ? "task" : "tasks"}
                 </span>
               </button>
@@ -203,7 +204,7 @@ export function ProjectTasksSection({
       {error ? (
         <div
           role="alert"
-          className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+          className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-sm text-destructive"
         >
           <span>{error}</span>
           <Button variant="outline" size="sm" onClick={() => void load()}>
@@ -213,7 +214,7 @@ export function ProjectTasksSection({
       ) : null}
 
       {loading ? (
-        <div className="flex min-h-72 items-center justify-center gap-2 text-sm text-[#77857f]">
+        <div className="flex min-h-72 items-center justify-center gap-2 text-sm text-muted-foreground">
           <LoaderCircle className="size-5 animate-spin" aria-hidden />
           Loading tasks...
         </div>
@@ -224,14 +225,14 @@ export function ProjectTasksSection({
           </div>
 
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            <div className="rounded-xl border border-[#e1e6df] bg-[#f9faf7] p-3">
-              <div className="flex items-center justify-between text-xs font-semibold text-[#65776f]">
+            <div className="rounded-md border border-border bg-muted p-3">
+              <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
                 <span className="flex items-center gap-2">
                   <TrendingUp className="size-4" aria-hidden /> Daily progress
                 </span>
                 <span>{progress}%</span>
               </div>
-              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#e2e8e1]">
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary">
                 <div
                   className="h-full rounded-full transition-[width] duration-300"
                   style={{
@@ -241,15 +242,15 @@ export function ProjectTasksSection({
                 />
               </div>
             </div>
-            <div className="flex items-center gap-3 rounded-xl border border-[#e1e6df] bg-[#f9faf7] p-3">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-white text-[#587267]">
+            <div className="flex items-center gap-3 rounded-md border border-border bg-muted p-3">
+              <span className="flex size-8 items-center justify-center rounded-lg bg-card text-muted-foreground">
                 <Clock3 className="size-4" aria-hidden />
               </span>
               <div>
-                <p className="text-sm font-semibold text-[#29423b]">
+                <p className="text-sm font-semibold text-foreground">
                   {formatDuration(plannedMinutes)}
                 </p>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#829089]">
+                <p className="text-[10px] font-medium text-muted-foreground">
                   Planned effort
                 </p>
               </div>

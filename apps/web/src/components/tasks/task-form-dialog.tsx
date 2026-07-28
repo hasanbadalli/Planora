@@ -220,7 +220,7 @@ export function TaskFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[94dvh] overflow-y-auto p-5 sm:max-w-[640px] sm:p-6">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-[#172f2b]">
+          <DialogTitle className="text-lg font-semibold">
             {task ? "Edit task" : "Add task"}
           </DialogTitle>
           <DialogDescription>
@@ -239,14 +239,14 @@ export function TaskFormDialog({
               placeholder="What do you want to accomplish?"
               maxLength={200}
               required
-              className="h-11"
+              className="h-10"
             />
           </Field>
 
           <Field label="Projects (optional)" htmlFor="project-options">
             <div
               id="project-options"
-              className="rounded-xl border border-[#dfe6de] bg-[#fafbf8] p-3"
+              className="rounded-md border border-border bg-muted p-3"
             >
               <div className="grid max-h-44 gap-2 overflow-y-auto sm:grid-cols-2">
                 {projects.map((project) => {
@@ -260,8 +260,8 @@ export function TaskFormDialog({
                       className={cn(
                         "flex min-h-11 items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition",
                         selected
-                          ? "border-[#789487] bg-white text-[#24443b] shadow-sm"
-                          : "border-transparent text-[#68766f] hover:border-[#dce4dc] hover:bg-white",
+                          ? "border-primary/50 bg-card text-foreground shadow-notion"
+                          : "border-transparent text-muted-foreground hover:border-border hover:bg-card",
                       )}
                     >
                       <span
@@ -272,14 +272,14 @@ export function TaskFormDialog({
                         {project.name}
                       </span>
                       {selected ? (
-                        <Check className="size-4 shrink-0 text-[#315a4d]" />
+                        <Check className="size-4 shrink-0 text-primary" />
                       ) : null}
                     </button>
                   );
                 })}
               </div>
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-[#e7ebe5] pt-3">
-                <p className="text-xs text-[#7a8781]">
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
+                <p className="text-xs text-muted-foreground">
                   {projectIds.length
                     ? `${projectIds.length} project${projectIds.length === 1 ? "" : "s"} selected`
                     : "This task is not tied to a project."}
@@ -287,7 +287,7 @@ export function TaskFormDialog({
                 <button
                   type="button"
                   onClick={() => setAddProject((value) => !value)}
-                  className="flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold text-[#315a4d] transition hover:bg-[#edf3eb]"
+                  className="flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium text-primary transition hover:bg-accent"
                 >
                   <FolderPlus className="size-4" />
                   Add new project
@@ -297,7 +297,7 @@ export function TaskFormDialog({
           </Field>
 
           {addProject ? (
-            <div className="rounded-xl border border-[#dfe6da] bg-[#f6f8f3] p-4">
+            <div className="rounded-md border border-border bg-muted p-4">
               <Label htmlFor="new-project" className="flex items-center gap-2">
                 <Plus className="size-4" />
                 New project name
@@ -310,7 +310,7 @@ export function TaskFormDialog({
                 maxLength={80}
                 className="mt-2 h-10 bg-white"
               />
-              <p className="mt-2 text-xs text-[#7b8781]">
+              <p className="mt-2 text-xs text-muted-foreground">
                 The new project will be assigned alongside your current choices.
               </p>
             </div>
@@ -319,13 +319,13 @@ export function TaskFormDialog({
           <Field label="Categories" htmlFor="category-order">
             <div
               id="category-order"
-              className="rounded-xl border border-[#dfe6de] bg-[#fafbf8] p-3"
+              className="rounded-md border border-border bg-muted p-3"
             >
               <div className="mb-3 flex items-center justify-between gap-3">
-                <p className="text-xs leading-5 text-[#738079]">
+                <p className="text-xs leading-5 text-muted-foreground">
                   Drag to reorder. The first category sets the task icon.
                 </p>
-                <span className="shrink-0 rounded-full bg-[#e9f0e7] px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-[#46675c]">
+                <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                   {categoryOrder.length}/8
                 </span>
               </div>
@@ -352,13 +352,13 @@ export function TaskFormDialog({
                 </SortableContext>
               </DndContext>
               {unselectedCategories.length ? (
-                <div className="mt-3 flex flex-wrap gap-2 border-t border-[#e7ebe5] pt-3">
+                <div className="mt-3 flex flex-wrap gap-2 border-t border-border pt-3">
                   {unselectedCategories.map((category) => (
                     <button
                       key={category.value}
                       type="button"
                       onClick={() => addCategory(category.value)}
-                      className="flex min-h-9 items-center gap-1.5 rounded-lg border border-[#e0e5df] bg-white px-2.5 text-xs font-semibold text-[#64736c] transition hover:border-[#9db0a6] hover:text-[#315a4d]"
+                      className="flex min-h-9 items-center gap-1.5 rounded-md border border-border bg-card px-2.5 text-xs font-medium text-muted-foreground transition hover:border-input hover:text-foreground"
                     >
                       <Plus className="size-3.5" />
                       <TaskCategoryIcon
@@ -381,7 +381,7 @@ export function TaskFormDialog({
                 type="date"
                 defaultValue={startDate ? dateKey(startDate) : selectedDate}
                 required
-                className="h-11"
+                className="h-10"
               />
             </Field>
             <Field label="Starts" htmlFor="start-time">
@@ -391,7 +391,7 @@ export function TaskFormDialog({
                 type="time"
                 defaultValue={startDate ? localTime(startDate) : "09:00"}
                 required
-                className="h-11"
+                className="h-10"
               />
             </Field>
             <Field label="Ends" htmlFor="end-time">
@@ -401,7 +401,7 @@ export function TaskFormDialog({
                 type="time"
                 defaultValue={endDate ? localTime(endDate) : "10:00"}
                 required
-                className="h-11"
+                className="h-10"
               />
             </Field>
           </div>
@@ -412,7 +412,7 @@ export function TaskFormDialog({
                 id="task-status"
                 name="status"
                 defaultValue={task?.status ?? "todo"}
-                className="h-11 w-full rounded-lg border bg-white px-3 text-sm"
+                className="h-10 w-full rounded-md border border-input bg-card px-3 text-sm"
               >
                 <option value="todo">Todo</option>
                 <option value="in_progress">In Progress</option>
@@ -424,7 +424,7 @@ export function TaskFormDialog({
                 id="task-difficulty"
                 name="difficulty"
                 defaultValue={task?.difficulty ?? ""}
-                className="h-11 w-full rounded-lg border bg-white px-3 text-sm"
+                className="h-10 w-full rounded-md border border-input bg-card px-3 text-sm"
               >
                 <option value="">Not set</option>
                 <option value="easy">Easy</option>
@@ -445,9 +445,9 @@ export function TaskFormDialog({
                   value={estimatedMinutes}
                   onChange={(event) => setEstimatedMinutes(event.target.value)}
                   placeholder="e.g. 45"
-                  className="h-11 pr-16"
+                  className="h-10 pr-16"
                 />
-                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-[#7a8781]">
+                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground">
                   minutes
                 </span>
               </div>
@@ -455,7 +455,7 @@ export function TaskFormDialog({
           </div>
 
           <div className="-mt-2 flex flex-wrap items-center gap-2" aria-label="Estimated effort presets">
-            <span className="mr-1 text-xs text-[#7a8781]">Quick estimate</span>
+            <span className="mr-1 text-xs text-muted-foreground">Quick estimate</span>
             {[15, 30, 45, 60, 90, 120].map((minutes) => (
               <button
                 key={minutes}
@@ -464,8 +464,8 @@ export function TaskFormDialog({
                 className={cn(
                   "min-h-8 rounded-lg border px-2.5 text-xs font-semibold transition",
                   estimatedMinutes === String(minutes)
-                    ? "border-[#789487] bg-[#eaf0e8] text-[#294d43]"
-                    : "border-[#e0e5df] bg-white text-[#6f7c76] hover:border-[#aab9b1]",
+                    ? "border-primary/50 bg-primary/10 text-primary"
+                    : "border-border bg-card text-muted-foreground hover:border-input",
                 )}
               >
                 {minutes < 60 ? `${minutes}m` : `${minutes / 60}h`}
@@ -475,7 +475,7 @@ export function TaskFormDialog({
               <button
                 type="button"
                 onClick={() => setEstimatedMinutes("")}
-                className="min-h-8 rounded-lg px-2 text-xs font-semibold text-[#7b8781] hover:bg-[#f0f3ef]"
+                className="min-h-8 rounded-md px-2 text-xs font-medium text-muted-foreground hover:bg-accent"
               >
                 Clear
               </button>
@@ -493,18 +493,18 @@ export function TaskFormDialog({
             />
           </Field>
 
-          <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-[#e0e6de] p-4">
+          <label className="flex cursor-pointer items-start gap-3 rounded-md border border-border p-4">
             <input
               type="checkbox"
               name="weekly_repeat"
               defaultChecked={task?.weekly_repeat ?? false}
-              className="mt-0.5 size-4 accent-[#315a4d]"
+              className="mt-0.5 size-4 accent-[#2383e2]"
             />
             <span>
-              <span className="block text-sm font-semibold text-[#263f39]">
+              <span className="block text-sm font-medium text-foreground">
                 Repeat every week
               </span>
-              <span className="mt-1 block text-xs leading-5 text-[#75817c]">
+              <span className="mt-1 block text-xs leading-5 text-muted-foreground">
                 The task appears on the same weekday and time. Occurrences are
                 calculated on demand.
               </span>
@@ -514,7 +514,7 @@ export function TaskFormDialog({
           {error ? (
             <p
               role="alert"
-              className="rounded-xl border border-[#efd2cd] bg-[#fff7f5] px-4 py-3 text-sm text-[#99443d]"
+              className="rounded-md border border-destructive/30 bg-destructive/5 px-3.5 py-2.5 text-sm text-destructive"
             >
               {error}
             </p>
@@ -531,7 +531,6 @@ export function TaskFormDialog({
             <Button
               type="submit"
               disabled={saving}
-              className="bg-[#173b35] text-white hover:bg-[#245047]"
             >
               {saving ? <LoaderCircle className="animate-spin" /> : null}
               {saving ? "Saving..." : task ? "Save changes" : "Create task"}
@@ -564,28 +563,28 @@ function SortableCategory({
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
-        "flex min-h-11 items-center gap-2 rounded-lg border bg-white px-2 py-1.5 shadow-sm",
-        primary ? "border-[#8da69a]" : "border-[#e0e5df]",
+        "flex min-h-11 items-center gap-2 rounded-md border bg-card px-2 py-1.5 shadow-notion",
+        primary ? "border-primary/50" : "border-border",
         isDragging && "relative z-20 scale-[1.01] shadow-lg",
       )}
     >
       <button
         type="button"
         aria-label={`Reorder ${label}`}
-        className="flex size-9 shrink-0 touch-none cursor-grab items-center justify-center rounded-md text-[#8b9791] hover:bg-[#f0f3ef] active:cursor-grabbing"
+        className="flex size-9 shrink-0 touch-none cursor-grab items-center justify-center rounded-md text-muted-foreground hover:bg-accent active:cursor-grabbing"
         {...attributes}
         {...listeners}
       >
         <GripVertical className="size-4" />
       </button>
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#edf2ec] text-[#4f6b60]">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary text-muted-foreground">
         <TaskCategoryIcon category={category} className="size-4" />
       </span>
-      <span className="min-w-0 flex-1 truncate text-sm font-semibold text-[#344b44]">
+      <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
         {label}
       </span>
       {primary ? (
-        <span className="rounded-full bg-[#e8f0e6] px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-[#416459]">
+        <span className="rounded-full bg-[#e7f3f8] px-2 py-0.5 text-[10px] font-medium text-[#2b6a9b]">
           Task icon
         </span>
       ) : null}
@@ -594,7 +593,7 @@ function SortableCategory({
         aria-label={`Remove ${label}`}
         disabled={!removable}
         onClick={onRemove}
-        className="flex size-9 shrink-0 items-center justify-center rounded-md text-[#89958f] transition hover:bg-[#f7ecea] hover:text-[#9c4f49] disabled:invisible"
+        className="flex size-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive disabled:invisible"
       >
         <X className="size-4" />
       </button>

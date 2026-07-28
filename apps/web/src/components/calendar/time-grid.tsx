@@ -254,11 +254,11 @@ export function TimeGrid({
 
   return (
     <>
-      <div className="overflow-hidden rounded-[22px] border border-[#d9e1d8] bg-white">
+      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-notion">
         {days.length > 1 ? (
-          <div className="flex items-center justify-between gap-3 border-b border-[#e6ebe4] bg-[#f8faf6] px-4 py-2 text-[10px] font-semibold text-[#718078] sm:hidden">
+          <div className="flex items-center justify-between gap-3 border-b border-border bg-muted px-4 py-2 text-[10px] font-medium text-muted-foreground sm:hidden">
             <span>Swipe to explore the week</span>
-            <span className="text-[#47685d]">Time stays pinned</span>
+            <span>Time stays pinned</span>
           </div>
         ) : null}
         <div
@@ -269,12 +269,12 @@ export function TimeGrid({
           <div style={{ minWidth }}>
             {showDayHeaders ? (
               <div
-                className="sticky top-0 z-50 grid border-b border-[#e1e7df] bg-[#fbfcfa]"
+                className="sticky top-0 z-50 grid border-b border-border bg-card"
                 style={{
                   gridTemplateColumns: `64px repeat(${days.length}, minmax(0, 1fr))`,
                 }}
               >
-                <div className="sticky left-0 z-20 border-r border-[#dce3dc] bg-[#f7f9f6] shadow-[5px_0_12px_rgba(37,60,50,0.06)]" />
+                <div className="sticky left-0 z-20 border-r border-border bg-muted" />
                 {days.map((day) => {
                   const key = dateKey(day);
                   const active = selectedDate === key;
@@ -283,21 +283,21 @@ export function TimeGrid({
                     <div
                       key={key}
                       className={cn(
-                        "relative border-r border-[#e4e9e3] px-2 py-3 text-center last:border-r-0",
-                        active && "bg-[#f0f5eb]",
+                        "relative border-r border-border px-2 py-2.5 text-center last:border-r-0",
+                        active && "bg-primary/5",
                       )}
                     >
                       <button
                         onClick={() => onSelectDate?.(key)}
                         className="w-full rounded-lg"
                       >
-                        <span className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7f8c86]">
+                        <span className="block text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                           {day.toLocaleDateString("en", { weekday: "short" })}
                         </span>
                         <span
                           className={cn(
-                            "mx-auto mt-1 flex size-8 items-center justify-center rounded-full text-sm font-semibold",
-                            today && "bg-[#d7f36b] text-[#17342f]",
+                            "mx-auto mt-0.5 flex size-7 items-center justify-center rounded-full text-sm font-semibold",
+                            today && "bg-primary text-primary-foreground",
                           )}
                         >
                           {day.getDate()}
@@ -306,7 +306,7 @@ export function TimeGrid({
                       <Link
                         href={`/calendar/${key}`}
                         aria-label={`Open ${day.toLocaleDateString("en", { month: "long", day: "numeric" })} detail`}
-                        className="absolute right-1.5 top-1.5 flex size-7 items-center justify-center rounded-lg text-[#8a9690] hover:bg-white hover:text-[#31554a]"
+                        className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-md text-muted-foreground/70 hover:bg-accent hover:text-foreground"
                       >
                         <Expand className="size-3.5" />
                       </Link>
@@ -353,8 +353,8 @@ export function TimeGrid({
                         <div
                           key={key}
                           className={cn(
-                            "relative border-r border-[#e1e6e0] last:border-r-0",
-                            selectedDate === key && "bg-[#f7faf4]/55",
+                            "relative border-r border-border last:border-r-0",
+                            selectedDate === key && "bg-primary/[0.03]",
                           )}
                         >
                           {dropPreview &&
@@ -419,13 +419,13 @@ export function TimeGrid({
               Choose how this calendar change should affect the weekly series.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2 rounded-xl border border-[#e0e6de] bg-[#f8faf6] p-4 text-sm text-[#53645d]">
+          <div className="space-y-2 rounded-md border border-border bg-muted p-4 text-sm text-muted-foreground">
             <p>
-              <strong className="text-[#263f38]">This occurrence</strong>{" "}
+              <strong className="text-foreground">This occurrence</strong>{" "}
               changes only {recurrenceChange?.task.series_date}.
             </p>
             <p>
-              <strong className="text-[#263f38]">This and future</strong> keeps
+              <strong className="text-foreground">This and future</strong> keeps
               earlier weeks unchanged and starts a new schedule here.
             </p>
           </div>
@@ -450,7 +450,6 @@ export function TimeGrid({
               This occurrence
             </Button>
             <Button
-              className="bg-[#173b35] text-white"
               onClick={() => {
                 const change = recurrenceChange;
                 setRecurrenceChange(null);
@@ -465,9 +464,9 @@ export function TimeGrid({
       {feedback ? (
         <div
           role="status"
-          className="fixed bottom-24 right-4 z-50 flex max-w-sm items-center gap-2 rounded-xl bg-[#173b35] px-4 py-3 text-sm font-medium text-white shadow-xl sm:bottom-6 sm:right-6"
+          className="fixed bottom-24 right-4 z-50 flex max-w-sm items-center gap-2 rounded-lg bg-foreground px-4 py-3 text-sm font-medium text-background shadow-notion-lg sm:bottom-6 sm:right-6"
         >
-          <Check className="size-4 shrink-0 text-[#d7f36b]" />
+          <Check className="size-4 shrink-0 text-emerald-400" />
           {feedback}
         </div>
       ) : null}
@@ -530,10 +529,10 @@ function TimeDropPreview({
   );
   return (
     <div
-      className="pointer-events-none absolute inset-x-1 z-30 flex items-start rounded-lg border-2 border-dashed border-[#55796c] bg-[#dfead9]/80 p-2 shadow-[0_10px_28px_rgba(45,75,64,0.16)] transition-[top,height] duration-100"
+      className="pointer-events-none absolute inset-x-1 z-30 flex items-start rounded-md border-2 border-dashed border-primary/60 bg-primary/10 p-2 transition-[top,height] duration-100"
       style={{ top, height }}
     >
-      <span className="rounded-md bg-[#173b35] px-2 py-1 text-[9px] font-bold text-white shadow-sm">
+      <span className="rounded-md bg-foreground px-2 py-1 text-[9px] font-semibold text-background shadow-sm">
         {saving ? "Saving" : "Drop"}{" "}
         {formatTime(change.startsAt.toISOString())}–
         {formatTime(change.endsAt.toISOString())}
@@ -546,21 +545,21 @@ function HourLabels() {
   return (
     <div
       data-hour-gutter
-      className="sticky left-0 z-40 h-full w-16 border-r border-[#dce3dc] bg-[#fbfcfa] shadow-[5px_0_12px_rgba(37,60,50,0.06)]"
+      className="sticky left-0 z-40 h-full w-16 border-r border-border bg-card"
     >
-      <span className="absolute right-3 top-1.5 text-[10px] font-medium tabular-nums text-[#718078]">
+      <span className="absolute right-3 top-1.5 text-[10px] font-medium tabular-nums text-muted-foreground">
         00:00
       </span>
       {Array.from({ length: 23 }, (_, index) => index + 1).map((hour) => (
         <span
           key={hour}
-          className="absolute right-3 -translate-y-1/2 text-[10px] font-medium tabular-nums text-[#83908a]"
+          className="absolute right-3 -translate-y-1/2 text-[10px] font-medium tabular-nums text-muted-foreground/80"
           style={{ top: hour * HOUR_HEIGHT }}
         >
           {String(hour).padStart(2, "0")}:00
         </span>
       ))}
-      <span className="absolute bottom-1.5 right-3 text-[10px] font-medium tabular-nums text-[#718078]">
+      <span className="absolute bottom-1.5 right-3 text-[10px] font-medium tabular-nums text-muted-foreground">
         24:00
       </span>
     </div>
@@ -573,14 +572,14 @@ function HourLines() {
       {Array.from({ length: 25 }, (_, hour) => (
         <div
           key={`hour-${hour}`}
-          className="absolute left-0 right-0 border-t border-[#e8ece7]"
+          className="absolute left-0 right-0 border-t border-border/80"
           style={{ top: hour * HOUR_HEIGHT }}
         />
       ))}
       {Array.from({ length: 48 }, (_, half) => (
         <div
           key={`half-${half}`}
-          className="absolute left-0 right-0 border-t border-dashed border-[#f0f2ef]"
+          className="absolute left-0 right-0 border-t border-dashed border-border/40"
           style={{ top: half * (HOUR_HEIGHT / 2) }}
         />
       ))}
@@ -725,14 +724,14 @@ function TimeTaskBlock({
           if (event.key === "Enter") onEdit();
         }}
         className={cn(
-          "relative h-full cursor-grab overflow-hidden rounded-lg border bg-white px-2 py-1.5 text-left shadow-sm outline-none transition-all duration-150 hover:z-20 hover:-translate-y-px hover:shadow-md active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-[#4f7665]",
+          "relative h-full cursor-grab overflow-hidden rounded-md border bg-card px-2 py-1.5 text-left shadow-notion outline-none transition-all duration-150 hover:z-20 hover:-translate-y-px hover:shadow-notion-lg active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-ring",
           resizePreview &&
-            "ring-2 ring-[#55796c]/35 shadow-[0_12px_30px_rgba(45,75,64,0.2)]",
+            "shadow-notion-lg ring-2 ring-ring",
           disabled && "cursor-wait opacity-60",
         )}
         style={{
-          borderColor: `${primaryProject?.color ?? "#5F7169"}70`,
-          backgroundColor: `${primaryProject?.color ?? "#5F7169"}14`,
+          borderColor: `${primaryProject?.color ?? "#9B9A97"}55`,
+          backgroundColor: `${primaryProject?.color ?? "#9B9A97"}10`,
           borderLeftWidth: 3,
         }}
       >
@@ -751,7 +750,7 @@ function TimeTaskBlock({
           compact={previewHeight < 52}
         />
         {resizePreview ? (
-          <span className="pointer-events-none absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-md bg-[#173b35] px-2 py-1 text-[9px] font-bold text-white shadow-lg">
+          <span className="pointer-events-none absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-[9px] font-semibold text-background shadow-lg">
             {formatTime(previewStartsAt.toISOString())}–
             {formatTime(previewEndsAt.toISOString())}
           </span>
@@ -804,7 +803,7 @@ function ResizeHandle({
       onClick={(event) => event.stopPropagation()}
       aria-label={`Resize task ${edge} time`}
       className={cn(
-        "absolute left-0 right-0 z-20 flex h-3 cursor-ns-resize touch-none items-center justify-center text-[#50665d] opacity-40 transition hover:bg-white/50 hover:opacity-100 focus:opacity-100 sm:opacity-0",
+        "absolute left-0 right-0 z-20 flex h-3 cursor-ns-resize touch-none items-center justify-center text-muted-foreground opacity-40 transition hover:bg-background/60 hover:opacity-100 focus:opacity-100 sm:opacity-0",
         edge === "start" ? "top-0" : "bottom-0",
       )}
     >
@@ -828,16 +827,16 @@ function TimeTaskContent({
     <div
       className={cn(
         overlay &&
-          "w-52 scale-[1.04] rounded-xl border border-[#89a096] bg-white p-3 shadow-[0_24px_60px_rgba(30,58,49,0.25)]",
+          "w-52 scale-[1.04] rounded-md border border-border bg-card p-3 shadow-notion-lg",
       )}
     >
       <div className="flex min-w-0 items-center justify-between gap-1">
-        <span className="truncate text-[9px] font-bold tabular-nums text-[#50665d]">
+        <span className="truncate text-[9px] font-semibold tabular-nums text-muted-foreground">
           {formatTime(task.starts_at)}–{formatTime(task.ends_at)}
         </span>
         <span
           className={cn(
-            "shrink-0 rounded-full border px-1.5 py-0.5 text-[7px] font-bold uppercase",
+            "shrink-0 rounded-full border px-1.5 py-0.5 text-[8px] font-medium",
             STATUS_STYLES[task.status],
           )}
         >
@@ -847,23 +846,23 @@ function TimeTaskContent({
       <div className="mt-1 flex min-w-0 items-center gap-1.5">
         <TaskCategoryIcon
           category={primaryTaskCategory(task)}
-          className="size-3 shrink-0 text-[#526d63]"
+          className="size-3 shrink-0 text-muted-foreground"
         />
-        <p className="truncate text-[11px] font-semibold leading-4 text-[#263f38]">
+        <p className="truncate text-[11px] font-semibold leading-4 text-foreground">
           {task.title}
         </p>
       </div>
       {!compact ? (
         <div className="mt-1 flex items-center justify-between gap-2">
-          <span className="truncate text-[9px] font-medium text-[#6d7b75]">
+          <span className="truncate text-[9px] font-medium text-muted-foreground">
             {projects.length
               ? `${projects[0].name}${projects.length > 1 ? ` +${projects.length - 1}` : ""}`
               : primaryTaskCategory(task)}
           </span>
           {task.weekly_repeat ? (
-            <Repeat2 className="size-2.5 shrink-0 text-[#71856f]" />
+            <Repeat2 className="size-2.5 shrink-0 text-muted-foreground" />
           ) : (
-            <GripVertical className="size-2.5 shrink-0 text-[#8d9993]" />
+            <GripVertical className="size-2.5 shrink-0 text-muted-foreground/70" />
           )}
         </div>
       ) : null}
