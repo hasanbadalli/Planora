@@ -1,0 +1,14 @@
+{
+  "name": "planora",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File ./dev.ps1",
+    "dev:web": "npm --prefix apps/web run dev",
+    "build:web": "npm --prefix apps/web run build",
+    "lint:web": "npm --prefix apps/web run lint"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
